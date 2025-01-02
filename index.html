@@ -77,121 +77,125 @@
       return nodes.map((node, index) => {
         const angle = angleStep * index;
         return {
-          ...node,
+          id: node.id,
+          label: node.label,
+          title: node.title,
           x: centerX + radius * Math.cos(angle),
           y: centerY + radius * Math.sin(angle)
         };
       });
     }
 
-    // Create nodes from treatments and conditions
-    var nodes = treatmentsAndConditions.map(treatment => ({
+    // Create nodes and edges
+    let nodes = treatmentsAndConditions.map(treatment => ({
       id: treatment.id,
       label: treatment.title,
       title: treatment.title
     }));
 
-    // Create edges connecting nodes based on shared tags
-    var edges = [];
+    let edges = [];
     treatmentsAndConditions.forEach((treatment, index) => {
       for (let i = index + 1; i < treatmentsAndConditions.length; i++) {
-        const commonTags = treatment.tags.filter(tag => treatmentsAndConditions[i].tags.includes(tag));
+        const commonTags = treatment.tags.filter(tag => 
+          treatmentsAndConditions[i].tags.includes(tag)
+        );
         if (commonTags.length > 0) {
-          edges.push({ from: treatment.id, to: treatmentsAndConditions[i].id });
+          edges.push({ 
+            from: treatment.id, 
+            to: treatmentsAndConditions[i].id,
+            title: `Common tags: ${commonTags.join(", ")}`
+          });
         }
       }
     });
 
-    // Set up a circular layout: center of the circle and radius
+    // Initial circular layout
     const centerX = 0;
     const centerY = 0;
-    const radius = 200;
-
-    // Initialize node positions
+    const radius = 300;
     nodes = calculateCircularPositions(nodes, radius, centerX, centerY);
 
-    // Create network container
-    var container = document.getElementById("related-posts-graph");
-
-    // Define the data set for the network
-    var data = {
+    // Create the network
+    const container = document.getElementById("related-posts-graph");
+    const data = {
       nodes: new vis.DataSet(nodes),
       edges: new vis.DataSet(edges)
     };
 
-    // Set up network options with exaggerated physics
-    var options = {
-      layout: {
-        improvedLayout: false, // We handle the circular layout manually
-      },
+    const options = {
       physics: {
-        enabled: false, // Initially, physics is turned off
+        enabled: false,
+        stabilization: {
+          enabled: true,
+          iterations: 1000
+        },
         barnesHut: {
-          gravitationalConstant: -5000, // Increased repulsion force
-          springLength: 300, // Longer spring length to make edges stretch further
-          damping: 0.4, // Adjust damping for more explosive movement
-        },
-        forceAtlas2Based: {
-          gravitationalConstant: -5000, // Exaggerated force
-          springLength: 300,
-          springConstant: 0.1,
-        },
-        solver: {
-          iterations: 200, // Increased solver iterations for more movement
+          gravitationalConstant: -2000,
+          centralGravity: 0.3,
+          springLength: 95,
+          springConstant: 0.04,
+          damping: 0.09
         }
       },
-      interaction: {
-        zoomView: true,
-        dragNodes: true
-      },
       nodes: {
-        color: '#fff',
-        font: {
-          color: '#ffffff'
+        color: {
+          background: '#4CAF50',
+          border: '#2E7D32',
+          highlight: {
+            background: '#81C784',
+            border: '#4CAF50'
+          }
         },
-        size: 12,
+        font: {
+          color: '#ffffff',
+          size: 14
+        },
+        borderWidth: 2,
+        size: 25,
         shape: 'dot'
       },
       edges: {
-        color: '#ffffff',
-        width: 1
+        color: {
+          color: '#ffffff',
+          highlight: '#81C784'
+        },
+        width: 2,
+        smooth: {
+          type: 'continuous'
+        }
+      },
+      interaction: {
+        hover: true,
+        tooltipDelay: 200
       }
     };
 
-    // Create the network
-    var network = new vis.Network(container, data, options);
+    const network = new vis.Network(container, data, options);
+    let isPhysicsEnabled = false;
 
-    // Add edges connecting unrelated data to other nodes
-    treatmentsAndConditions.forEach((treatment, index) => {
-      if (treatment.title.includes("Unrelated")) {
-        // Connect to some treatment that shares a tag (for example)
-        const connectedTreatment = treatmentsAndConditions.find(t => t.title.includes("Treatment") && t.id !== treatment.id);
-        if (connectedTreatment) {
-          edges.push({ from: treatment.id, to: connectedTreatment.id });
-        }
+    // Toggle physics button handler
+    document.querySelector(".toggle-physics-button").addEventListener("click", function() {
+      isPhysicsEnabled = !isPhysicsEnabled;
+      
+      if (isPhysicsEnabled) {
+        // Enable physics and let nodes redistribute
+        network.setOptions({
+          physics: {
+            enabled: true,
+            stabilization: false
+          }
+        });
+      } else {
+        // Disable physics and restore circular layout
+        network.setOptions({ physics: { enabled: false } });
+        const updatedNodes = calculateCircularPositions(nodes, radius, centerX, centerY);
+        data.nodes.update(updatedNodes);
       }
     });
 
-    // Update edges
-    data.edges.add(edges);
-
-    // Toggle physics functionality
-    document.querySelector(".toggle-physics-button").addEventListener("click", function() {
-      // Toggle the physics setting
-      const currentPhysicsState = options.physics.enabled;
-      options.physics.enabled = !currentPhysicsState;
-
-      // Reset the network with the new physics state
-      network.setOptions(options);
-
-      // If physics is off, manually update the node positions to the circular layout
-      if (!options.physics.enabled) {
-        nodes = calculateCircularPositions(nodes, radius, centerX, centerY);
-        data.nodes.update(nodes);
-      } else {
-        // If physics is on, reset and let the layout automatically adjust
-        network.stabilize(); // This makes the nodes "explode" when physics is enabled
-      }
+    // Add stabilization complete event
+    network.on("stabilizationIterationsDone", function () {
+      network.setOptions({ physics: { stabilization: false } });
     });
   });
 </script>
