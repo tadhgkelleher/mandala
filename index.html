@@ -108,13 +108,15 @@
       edges: new vis.DataSet(edges)
     };
 
-    // Set up network options
+    // Set up network options with physics enabled
     var options = {
       layout: {
-        improvedLayout: false // We handle the circular layout manually
+        improvedLayout: false, // We handle the circular layout manually
       },
       physics: {
-        enabled: false // Disable physics for a static, circular layout
+        enabled: true, // Enable physics to allow for node movement
+        solver: 'forceAtlas2Based', // You can adjust this solver for different layouts
+        stabilization: { iterations: 200 } // Control the stabilization process
       },
       interaction: {
         zoomView: true,
@@ -127,11 +129,25 @@
         },
         size: 12,
         shape: 'dot'
+      },
+      edges: {
+        color: '#ffffff',
+        width: 1
       }
     };
 
     // Create the network
     var network = new vis.Network(container, data, options);
+
+    // Create a circle to connect the nodes visually
+    const circleEdge = [];
+    for (let i = 0; i < nodes.length; i++) {
+      const nextNode = i + 1 === nodes.length ? 0 : i + 1;
+      circleEdge.push({ from: nodes[i].id, to: nodes[nextNode].id });
+    }
+    
+    // Add the circle edges to the network
+    data.edges.add(circleEdge);
   });
 </script>
 
