@@ -22,13 +22,14 @@
       width: 100%;
     }
 
-    .expand-button {
+    .expand-button, .toggle-physics-button {
       background-color: blue;
       color: white;
       padding: 8px 12px;
       border: none;
       border-radius: 4px;
       margin-top: 10px;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -36,143 +37,110 @@
 
 <div id="related-posts-graph-container">
   <div id="related-posts-graph"></div>
-  <button id="expandButton" class="expand-button">Full Screen</button>
+  <button id="togglePhysicsButton" class="toggle-physics-button">Toggle Physics</button>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-  function calculateCircularPositions(nodes, radius) {
-    const angleStep = (2 * Math.PI) / nodes.length;
-    return nodes.map((node, index) => {
-      const angle = angleStep * index;
-      return {
-        ...node,
-        x: radius * Math.cos(angle),
-        y: radius * Math.sin(angle)
-      };
-    });
-  }
+  document.addEventListener("DOMContentLoaded", function () {
+    const treatmentsAndConditions = [
+      { id: 1, title: "Cancer Treatment", tags: ["Cancer", "Chemotherapy", "Surgery"] },
+      { id: 2, title: "Diabetes Management", tags: ["Diabetes", "Insulin", "Exercise"] },
+      { id: 3, title: "Heart Disease Treatment", tags: ["Heart", "Cholesterol", "Surgery"] },
+      { id: 4, title: "Asthma Management", tags: ["Asthma", "Inhalers", "Exercise"] },
+      { id: 5, title: "Flu Treatment", tags: ["Flu", "Antiviral", "Rest"] },
+      { id: 6, title: "COVID-19 Vaccination", tags: ["COVID-19", "Vaccine", "Prevention"] },
+      { id: 7, title: "Chronic Pain Relief", tags: ["Chronic Pain", "Medication", "Exercise"] },
+      { id: 8, title: "Mental Health Counseling", tags: ["Mental Health", "Therapy", "Support"] }
+    ];
 
-  var nodes = [
-    <?php foreach ($related_posts as $related_post) { ?>
-      {
-        id: <?php echo $related_post->ID; ?>,
-        label: <?php echo json_encode(esc_js(get_the_title($related_post->ID))); ?>,
-        url: <?php echo json_encode(esc_js(get_permalink($related_post->ID))); ?>
+    // Calculate positions for nodes in a circular layout
+    function calculateCircularPositions(nodes, radius) {
+      const angleStep = (2 * Math.PI) / nodes.length;
+      return nodes.map((node, index) => {
+        const angle = angleStep * index;
+        return {
+          ...node,
+          x: radius * Math.cos(angle),
+          y: radius * Math.sin(angle)
+        };
+      });
+    }
+
+    // Create nodes from treatments and conditions
+    var nodes = treatmentsAndConditions.map(treatment => ({
+      id: treatment.id,
+      label: treatment.title,
+      title: treatment.title
+    }));
+
+    // Create edges based on common tags
+    var edges = [];
+    for (let i = 0; i < treatmentsAndConditions.length; i++) {
+      for (let j = i + 1; j < treatmentsAndConditions.length; j++) {
+        const commonTags = treatmentsAndConditions[i].tags.filter(tag => treatmentsAndConditions[j].tags.includes(tag));
+        if (commonTags.length > 0) {
+          edges.push({ from: treatmentsAndConditions[i].id, to: treatmentsAndConditions[j].id });
+        }
+      }
+    }
+
+    // Initial node positions in a circle
+    nodes = calculateCircularPositions(nodes, 200);
+
+    // Create network container
+    var container = document.getElementById("related-posts-graph");
+
+    // Define the data set for the network
+    var data = {
+      nodes: new vis.DataSet(nodes),
+      edges: new vis.DataSet(edges)
+    };
+
+    // Set up network options
+    var options = {
+      layout: {
+        improvedLayout: false
       },
-    <?php } ?>
-  ];
-
-  // Calculate circular positions for initial load
-  nodes = calculateCircularPositions(nodes, 200);
-
-  var edges = [
-    <?php foreach ($connections as $connection) { ?>
-      { from: <?php echo $connection['from']; ?>, to: <?php echo $connection['to']; ?> },
-    <?php } ?>
-  ];
-
-  var container = document.getElementById("related-posts-graph");
-
-  var data = {
-    nodes: new vis.DataSet(nodes),
-    edges: new vis.DataSet(edges)
-  };
-
-  var options = {
-    layout: {
-      improvedLayout: false // Disable forceAtlas2-based layout by default
-    },
-    physics: {
-      enabled: <?php echo $atts['physics'] === 'on' ? 'true' : 'false'; ?>,
-      solver: 'forceAtlas2Based',
-      stabilization: {
+      physics: {
         enabled: true,
-        iterations: 200
-      }
-    },
-    interaction: {
-      zoomView: true,
-      dragNodes: true
-    },
-    nodes: {
-      color: '#fff',
-      font: {
-        color: '#ffffff'
+        solver: 'forceAtlas2Based',
+        stabilization: {
+          enabled: true,
+          iterations: 200
+        }
       },
-      size: 12,
-      shape: 'dot',
-      fixed: {
-        x: false,
-        y: false
-      }
-    },
-    manipulation: {
-      enabled: false
-    }
-  };
-
-  var network = new vis.Network(container, data, options);
-
-  // Add the toggle physics button on top of the graph
-  var togglePhysicsButton = document.createElement('button');
-  togglePhysicsButton.innerHTML = 'Toggle Physics';
-  togglePhysicsButton.style.position = 'absolute';
-  togglePhysicsButton.style.top = '10px';
-  togglePhysicsButton.style.left = '10px';
-  togglePhysicsButton.style.zIndex = '10';
-  togglePhysicsButton.style.padding = '5px 10px';
-  togglePhysicsButton.style.backgroundColor = '#333';
-  togglePhysicsButton.style.color = '#fff';
-  togglePhysicsButton.style.border = 'none';
-  togglePhysicsButton.style.cursor = 'pointer';
-  container.appendChild(togglePhysicsButton);
-
-  togglePhysicsButton.addEventListener("click", function () {
-    const isPhysicsEnabled = options.physics.enabled;
-    options.physics.enabled = !isPhysicsEnabled;
-    network.setOptions(options);
-
-    if (!options.physics.enabled) {
-      // When physics is disabled, maintain the circular layout
-      const updatedNodes = calculateCircularPositions(nodes, 200);
-      data.nodes.update(updatedNodes);
-    }
-  });
-
-  // Adjust network to handle stabilization and physics settings
-  network.on("stabilizationIterationsDone", function () {
-    if (!options.physics.enabled) {
-      const updatedNodes = calculateCircularPositions(nodes, 200);
-      data.nodes.update(updatedNodes);
-    }
-  });
-
-  // Zoom Controls (optional, can be removed if not needed)
-  var currentZoom = 1;
-  document.getElementById("zoomInButton").addEventListener("click", function () {
-    currentZoom += 0.2;
-    network.setOptions({
       interaction: {
-        zoomSpeed: 1.5
+        zoomView: true,
+        dragNodes: true
+      },
+      nodes: {
+        color: '#fff',
+        font: {
+          color: '#ffffff'
+        },
+        size: 12,
+        shape: 'dot',
+        fixed: { x: false, y: false }
+      }
+    };
+
+    // Create the network
+    var network = new vis.Network(container, data, options);
+
+    // Toggle physics when button is clicked
+    document.getElementById("togglePhysicsButton").addEventListener("click", function () {
+      const isPhysicsEnabled = options.physics.enabled;
+      options.physics.enabled = !isPhysicsEnabled;
+      network.setOptions(options);
+
+      if (!options.physics.enabled) {
+        // When physics is disabled, maintain the circular layout
+        const updatedNodes = calculateCircularPositions(nodes, 200);
+        data.nodes.update(updatedNodes);
       }
     });
-    network.moveTo({ scale: currentZoom });
   });
-
-  document.getElementById("zoomOutButton").addEventListener("click", function () {
-    currentZoom -= 0.2;
-    network.setOptions({
-      interaction: {
-        zoomSpeed: 1.5
-      }
-    });
-    network.moveTo({ scale: currentZoom });
-  });
-
-});
-
 </script>
 
 </body>
