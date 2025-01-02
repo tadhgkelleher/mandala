@@ -172,54 +172,74 @@
     let isPhysicsEnabled = false;
     const toggleButton = document.querySelector(".toggle-physics-button");
 
-    toggleButton.addEventListener("click", function() {
-      isPhysicsEnabled = !isPhysicsEnabled;
-      if (isPhysicsEnabled) {
-        toggleButton.textContent = "Disable Physics";
-        network.setOptions({
-          physics: {
-            enabled: true,
-            stabilization: {
-              enabled: true,
-              iterations: 1000,
-              updateInterval: 25
-            },
-            barnesHut: {
-              gravitationalConstant: -50000,
-              centralGravity: 0.03,
-              springLength: 400,
-              springConstant: 0.005,
-              damping: 0.09,
-              avoidOverlap: 1
-            },
-            repulsion: {
-              nodeDistance: 400
-            }
-          },
-          nodes: {
-            fixed: {
-              x: false,
-              y: false
-            }
-          }
-        });
-      } else {
-        toggleButton.textContent = "Enable Physics";
-        network.setOptions({ 
-          physics: { 
-            enabled: false 
-          },
-          nodes: {
-            fixed: {
-              x: true,
-              y: true
-            }
-          }
-        });
-        const updatedNodes = calculateCircularPositions(nodes, radius, centerX, centerY);
-        data.nodes.update(updatedNodes);
+   toggleButton.addEventListener("click", function() {
+  isPhysicsEnabled = !isPhysicsEnabled;
+  if (isPhysicsEnabled) {
+    toggleButton.textContent = "Disable Physics";
+    network.setOptions({
+      physics: {
+        enabled: true,
+        stabilization: {
+          enabled: true,
+          iterations: 1000,
+          updateInterval: 25
+        },
+        barnesHut: {
+          gravitationalConstant: -50000,
+          centralGravity: 0.03,
+          springLength: 400,
+          springConstant: 0.005,
+          damping: 0.09,
+          avoidOverlap: 1
+        },
+        repulsion: {
+          nodeDistance: 400
+        }
+      },
+      nodes: {
+        fixed: {
+          x: false,
+          y: false
+        }
+      },
+      edges: {
+        color: {
+          color: '#ffffff',
+          highlight: '#81C784'
+        },
+        smooth: {
+          type: 'dynamic',
+          roundness: 0.5
+        }
       }
     });
+  } else {
+    toggleButton.textContent = "Enable Physics";
+    network.setOptions({ 
+      physics: { 
+        enabled: false 
+      },
+      nodes: {
+        fixed: {
+          x: true,
+          y: true
+        }
+      },
+      edges: {
+        color: {
+          color: '#ffffff',
+          highlight: '#81C784'
+        },
+        smooth: { 
+          enabled: false  // Ensure straight lines by disabling smooth curves
+        }
+      }
+    });
+    const updatedNodes = calculateCircularPositions(nodes, radius, centerX, centerY);
+    data.nodes.update(updatedNodes);
+  }
+});
+
   });
 </script>
 
