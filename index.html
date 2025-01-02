@@ -44,41 +44,39 @@
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     const treatmentsAndConditions = [
-      { title: "Mental Health Therapy", tags: ["Mental Health", "Therapy", "Support"] },
-      { title: "Cancer Treatment", tags: ["Cancer", "Chemotherapy", "Surgery"] },
-      { title: "Diabetes Management", tags: ["Diabetes", "Insulin", "Exercise"] },
-      { title: "Heart Disease Treatment", tags: ["Heart", "Cholesterol", "Surgery"] },
-      { title: "Asthma Management", tags: ["Asthma", "Inhalers", "Exercise"] },
-      { title: "Flu Treatment", tags: ["Flu", "Antiviral", "Rest"] },
-      { title: "COVID-19 Vaccination", tags: ["COVID-19", "Vaccine", "Prevention"] },
-      { title: "Chronic Pain Relief", tags: ["Chronic Pain", "Medication", "Exercise"] },
-      { title: "Alzheimer's Disease", tags: ["Alzheimer's", "Memory", "Care"] },
-      { title: "Obesity Treatment", tags: ["Obesity", "Diet", "Exercise"] },
-      { title: "Stroke Rehabilitation", tags: ["Stroke", "Rehabilitation", "Physiotherapy"] },
-      { title: "Kidney Disease Management", tags: ["Kidney", "Dialysis", "Transplant"] },
-      { title: "Sleep Disorder Treatment", tags: ["Sleep", "Insomnia", "CPAP"] },
-      { title: "Lung Disease Treatment", tags: ["Lung", "COPD", "Oxygen"] },
-      { title: "Liver Disease Management", tags: ["Liver", "Hepatitis", "Transplant"] },
-      { title: "Weight Loss Surgery", tags: ["Obesity", "Surgery", "Diet"] },
-      { title: "Parkinson's Disease Management", tags: ["Parkinson's", "Exercise", "Medication"] },
-      { title: "Chronic Fatigue Syndrome", tags: ["Fatigue", "Exercise", "Support"] },
-      { title: "Depression Treatment", tags: ["Depression", "Therapy", "Medication"] },
-      { title: "HIV/AIDS Treatment", tags: ["HIV", "AIDS", "Medication"] }
+      { title: "Mental Health", tags: ["Mental Health", "Therapy", "Support"] },
+      { title: "Cancer", tags: ["Cancer", "Chemotherapy", "Surgery"] },
+      { title: "Diabetes", tags: ["Diabetes", "Insulin", "Exercise"] },
+      { title: "Heart", tags: ["Heart", "Cholesterol", "Surgery"] },
+      { title: "Asthma", tags: ["Asthma", "Inhalers", "Exercise"] },
+      { title: "Flu", tags: ["Flu", "Antiviral", "Rest"] },
+      { title: "COVID-19", tags: ["COVID-19", "Vaccine", "Prevention"] },
+      { title: "Chronic Pain", tags: ["Chronic Pain", "Medication", "Exercise"] },
+      { title: "Alzheimer's", tags: ["Alzheimer's", "Memory", "Care"] },
+      { title: "Obesity", tags: ["Obesity", "Diet", "Exercise"] },
+      { title: "Stroke", tags: ["Stroke", "Rehabilitation", "Physiotherapy"] },
+      { title: "Kidney", tags: ["Kidney", "Dialysis", "Transplant"] },
+      { title: "Sleep", tags: ["Sleep", "Insomnia", "CPAP"] },
+      { title: "Lung", tags: ["Lung", "COPD", "Oxygen"] },
+      { title: "Liver", tags: ["Liver", "Hepatitis", "Transplant"] },
+      { title: "Weight Loss", tags: ["Obesity", "Surgery", "Diet"] },
+      { title: "Parkinson's", tags: ["Parkinson's", "Exercise", "Medication"] },
+      { title: "Chronic Fatigue", tags: ["Fatigue", "Exercise", "Support"] },
+      { title: "Depression", tags: ["Depression", "Therapy", "Medication"] },
+      { title: "HIV", tags: ["HIV", "AIDS", "Medication"] }
     ];
 
-    // Create nodes where each node's ID is based on its tag names
+    // Create nodes where the node's ID is based on its title (main tag)
     let nodes = [];
     treatmentsAndConditions.forEach(treatment => {
-      treatment.tags.forEach(tag => {
-        nodes.push({
-          id: tag, // Use the tag name as the node ID
-          label: tag,
-          title: treatment.title
-        });
+      nodes.push({
+        id: treatment.title,  // Use the main tag as the node ID
+        label: treatment.title,
+        title: treatment.title
       });
     });
 
-    // Create edges between nodes that share tags
+    // Create edges between nodes that share related tags
     let edges = [];
     treatmentsAndConditions.forEach((treatment, index) => {
       for (let i = index + 1; i < treatmentsAndConditions.length; i++) {
@@ -87,8 +85,8 @@
         );
         commonTags.forEach(tag => {
           edges.push({
-            from: tag, // Create edge between shared tags (nodes)
-            to: tag,
+            from: treatment.title, // Use the main tag of the treatments as node IDs
+            to: treatmentsAndConditions[i].title,
             title: `Shared tag: ${tag}`
           });
         });
