@@ -185,19 +185,6 @@
         });
         network.stabilize(); // Ensure physics starts and stabilizes the layout
       }
-
-      // When physics is toggled off, isolate the unrelated data
-      if (!options.physics.enabled) {
-        const unrelatedNodes = nodes.filter(node => node.title.includes("Unrelated"));
-        const unrelatedClusterCenter = { x: 300, y: 300 }; // new position for unrelated data
-        unrelatedNodes.forEach(node => {
-          node.x = unrelatedClusterCenter.x;
-          node.y = unrelatedClusterCenter.y;
-        });
-
-        // Update nodes to reflect the new isolated positions
-        data.nodes.update(nodes);
-      }
     });
   });
 </script>
