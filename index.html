@@ -67,9 +67,9 @@
       { id: 20, title: "Chronic Fatigue Syndrome", tags: ["Fatigue", "Exercise", "Support"] },
       { id: 21, title: "Depression Treatment", tags: ["Depression", "Therapy", "Medication"] },
       { id: 22, title: "HIV/AIDS Treatment", tags: ["HIV", "AIDS", "Medication"] },
-      { id: 23, title: "Unrelated Data 1", tags: ["Unrelated", "Data", "Test"] }, // Unrelated data
-      { id: 24, title: "Unrelated Data 2", tags: ["Unrelated", "Data", "Test"] }, // Unrelated data
-      { id: 25, title: "Unrelated Data 3", tags: ["Test", "Random", "Info"] }, // Unrelated data
+      { id: 23, title: "Unrelated Data 1", tags: ["Unrelated", "Data", "Test"] },
+      { id: 24, title: "Unrelated Data 2", tags: ["Unrelated", "Data", "Test"] },
+      { id: 25, title: "Unrelated Data 3", tags: ["Test", "Random", "Info"] },
     ];
 
     // Function to calculate positions for nodes on a circle
@@ -149,15 +149,19 @@
     // Create the network
     var network = new vis.Network(container, data, options);
 
-    // Create a circle to connect the nodes visually
-    const circleEdge = [];
-    for (let i = 0; i < nodes.length; i++) {
-      const nextNode = i + 1 === nodes.length ? 0 : i + 1;
-      circleEdge.push({ from: nodes[i].id, to: nodes[nextNode].id });
-    }
-    
-    // Add the circle edges to the network
-    data.edges.add(circleEdge);
+    // Add edges connecting unrelated data to other nodes
+    treatmentsAndConditions.forEach((treatment, index) => {
+      if (treatment.title.includes("Unrelated")) {
+        // Connect to some treatment that shares a tag (for example)
+        const connectedTreatment = treatmentsAndConditions.find(t => t.title.includes("Treatment") && t.id !== treatment.id);
+        if (connectedTreatment) {
+          edges.push({ from: treatment.id, to: connectedTreatment.id });
+        }
+      }
+    });
+
+    // Update edges
+    data.edges.add(edges);
 
     // Toggle physics functionality
     document.querySelector(".toggle-physics-button").addEventListener("click", function() {
@@ -171,6 +175,20 @@
       // If physics is off, return to the circular layout
       if (!options.physics.enabled) {
         nodes = calculateCircularPositions(nodes, radius, centerX, centerY);
+        data.nodes.update(nodes);
+      }
+
+      // When physics is toggled, isolate the unrelated data
+      if (!options.physics.enabled) {
+        // Isolate unrelated data by moving them to a separate position
+        const unrelatedNodes = nodes.filter(node => node.title.includes("Unrelated"));
+        const unrelatedClusterCenter = { x: 300, y: 300 }; // new position for unrelated data
+        unrelatedNodes.forEach(node => {
+          node.x = unrelatedClusterCenter.x;
+          node.y = unrelatedClusterCenter.y;
+        });
+
+        // Update nodes to reflect the new isolated positions
         data.nodes.update(nodes);
       }
     });
