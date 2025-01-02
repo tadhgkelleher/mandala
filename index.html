@@ -96,12 +96,12 @@
     let edges = [];
     treatmentsAndConditions.forEach((treatment, index) => {
       for (let i = index + 1; i < treatmentsAndConditions.length; i++) {
-        const commonTags = treatment.tags.filter(tag => 
+        const commonTags = treatment.tags.filter(tag =>
           treatmentsAndConditions[i].tags.includes(tag)
         );
         if (commonTags.length > 0) {
-          edges.push({ 
-            from: treatment.id, 
+          edges.push({
+            from: treatment.id,
             to: treatmentsAndConditions[i].id,
             title: `Common tags: ${commonTags.join(", ")}`
           });
@@ -109,10 +109,10 @@
       }
     });
 
-    // Initial circular layout
+    // Updated circular layout with a larger radius
     const centerX = 0;
     const centerY = 0;
-    const radius = 300;
+    const radius = 450; // Increase the radius to spread nodes out more
     nodes = calculateCircularPositions(nodes, radius, centerX, centerY);
 
     // Create the network
@@ -124,16 +124,16 @@
 
     const options = {
       physics: {
-        enabled: false,
+        enabled: true,
         stabilization: {
           enabled: true,
           iterations: 1000
         },
         barnesHut: {
-          gravitationalConstant: -2000,
-          centralGravity: 0.3,
-          springLength: 95,
-          springConstant: 0.04,
+          gravitationalConstant: -5000, // Increased gravitational constant for more spread
+          centralGravity: 0.2, // Reduced central gravity
+          springLength: 150, // Increased spring length
+          springConstant: 0.03, // Reduced spring constant
           damping: 0.09
         }
       },
@@ -171,12 +171,12 @@
     };
 
     const network = new vis.Network(container, data, options);
-    let isPhysicsEnabled = false;
+    let isPhysicsEnabled = true;
 
     // Toggle physics button handler
     document.querySelector(".toggle-physics-button").addEventListener("click", function() {
       isPhysicsEnabled = !isPhysicsEnabled;
-      
+
       if (isPhysicsEnabled) {
         // Enable physics and let nodes redistribute
         network.setOptions({
@@ -199,6 +199,7 @@
     });
   });
 </script>
+
 
 </body>
 </html>
