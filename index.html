@@ -22,7 +22,7 @@
       width: 100%;
     }
 
-    .expand-button, .toggle-physics-button {
+    .toggle-physics-button {
       background-color: blue;
       color: white;
       padding: 8px 12px;
@@ -59,7 +59,6 @@
       { id: 13, title: "Sleep Disorder Treatment", tags: ["Sleep", "Insomnia", "CPAP"] },
       { id: 14, title: "Lung Disease Treatment", tags: ["Lung", "COPD", "Oxygen"] },
       { id: 15, title: "Mental Health Therapy", tags: ["Mental Health", "Therapy", "Support"] },
-      // More treatments and conditions
       { id: 16, title: "Liver Disease Management", tags: ["Liver", "Hepatitis", "Transplant"] },
       { id: 17, title: "Cancer Rehabilitation", tags: ["Cancer", "Rehabilitation", "Exercise"] },
       { id: 18, title: "Weight Loss Surgery", tags: ["Obesity", "Surgery", "Diet"] },
@@ -165,22 +164,29 @@
 
     // Toggle physics functionality
     document.querySelector(".toggle-physics-button").addEventListener("click", function() {
-      // Toggle the physics setting
       const currentPhysicsState = options.physics.enabled;
+      
+      // Toggle the physics setting
       options.physics.enabled = !currentPhysicsState;
       
       // Update the network with new physics setting
       network.setOptions(options);
 
-      // If physics is off, return to the circular layout
+      // If physics is off, keep the circular layout, if physics is on, let the layout adjust automatically
       if (!options.physics.enabled) {
         nodes = calculateCircularPositions(nodes, radius, centerX, centerY);
         data.nodes.update(nodes);
+      } else {
+        // Let physics take over the layout
+        network.setOptions({
+          layout: {
+            randomSeed: Math.random() // Use randomSeed to ensure physics calculations start fresh
+          }
+        });
       }
 
-      // When physics is toggled, isolate the unrelated data
+      // When physics is toggled off, isolate the unrelated data
       if (!options.physics.enabled) {
-        // Isolate unrelated data by moving them to a separate position
         const unrelatedNodes = nodes.filter(node => node.title.includes("Unrelated"));
         const unrelatedClusterCenter = { x: 300, y: 300 }; // new position for unrelated data
         unrelatedNodes.forEach(node => {
