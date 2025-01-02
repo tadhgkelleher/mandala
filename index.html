@@ -59,16 +59,17 @@
       { id: 13, title: "Sleep Disorder Treatment", tags: ["Sleep", "Insomnia", "CPAP"] },
       { id: 14, title: "Lung Disease Treatment", tags: ["Lung", "COPD", "Oxygen"] },
       { id: 15, title: "Mental Health Therapy", tags: ["Mental Health", "Therapy", "Support"] },
-      { id: 16, title: "Eczema Treatment", tags: ["Eczema", "Cream", "Itch Relief"] },
-      { id: 17, title: "Back Pain Management", tags: ["Back Pain", "Physiotherapy", "Medication"] },
-      { id: 18, title: "Migraine Treatment", tags: ["Migraine", "Pain Relief", "Diet"] },
-      { id: 19, title: "Thyroid Disorder Treatment", tags: ["Thyroid", "Hormones", "Medication"] },
-      { id: 20, title: "HIV Treatment", tags: ["HIV", "Antiretroviral", "Prevention"] },
-      { id: 21, title: "Multiple Sclerosis Treatment", tags: ["Multiple Sclerosis", "Medication", "Support"] },
-      { id: 22, title: "Parkinson's Disease Treatment", tags: ["Parkinson's", "Medication", "Exercise"] },
-      { id: 23, title: "Joint Pain Relief", tags: ["Joint Pain", "Arthritis", "Medication"] },
-      { id: 24, title: "Acne Treatment", tags: ["Acne", "Cream", "Cleanser"] },
-      { id: 25, title: "Rheumatoid Arthritis", tags: ["Rheumatoid Arthritis", "Medication", "Exercise"] }
+      // More treatments and conditions
+      { id: 16, title: "Liver Disease Management", tags: ["Liver", "Hepatitis", "Transplant"] },
+      { id: 17, title: "Cancer Rehabilitation", tags: ["Cancer", "Rehabilitation", "Exercise"] },
+      { id: 18, title: "Weight Loss Surgery", tags: ["Obesity", "Surgery", "Diet"] },
+      { id: 19, title: "Parkinson's Disease Management", tags: ["Parkinson's", "Exercise", "Medication"] },
+      { id: 20, title: "Chronic Fatigue Syndrome", tags: ["Fatigue", "Exercise", "Support"] },
+      { id: 21, title: "Depression Treatment", tags: ["Depression", "Therapy", "Medication"] },
+      { id: 22, title: "HIV/AIDS Treatment", tags: ["HIV", "AIDS", "Medication"] },
+      { id: 23, title: "Unrelated Data 1", tags: ["Unrelated", "Data", "Test"] }, // Unrelated data
+      { id: 24, title: "Unrelated Data 2", tags: ["Unrelated", "Data", "Test"] }, // Unrelated data
+      { id: 25, title: "Unrelated Data 3", tags: ["Test", "Random", "Info"] }, // Unrelated data
     ];
 
     // Function to calculate positions for nodes on a circle
@@ -166,6 +167,12 @@
       
       // Update the network with new physics setting
       network.setOptions(options);
+
+      // If physics is off, return to the circular layout
+      if (!options.physics.enabled) {
+        nodes = calculateCircularPositions(nodes, radius, centerX, centerY);
+        data.nodes.update(nodes);
+      }
     });
   });
 </script>
