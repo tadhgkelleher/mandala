@@ -177,13 +177,8 @@
         nodes = calculateCircularPositions(nodes, radius, centerX, centerY);
         data.nodes.update(nodes);
       } else {
-        // Let physics take over the layout
-        network.setOptions({
-          layout: {
-            randomSeed: Math.random() // Use randomSeed to ensure physics calculations start fresh
-          }
-        });
-        network.stabilize(); // Ensure physics starts and stabilizes the layout
+        // Reset the node positions and let physics explode the nodes
+        network.stabilize(); // This will make the nodes "explode" when physics is turned on
       }
     });
   });
