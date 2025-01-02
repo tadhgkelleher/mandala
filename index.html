@@ -183,6 +183,7 @@
             randomSeed: Math.random() // Use randomSeed to ensure physics calculations start fresh
           }
         });
+        network.stabilize(); // Ensure physics starts and stabilizes the layout
       }
 
       // When physics is toggled off, isolate the unrelated data
