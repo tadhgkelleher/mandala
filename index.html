@@ -62,17 +62,26 @@
     ];
 
     // Calculate positions for nodes in a circular layout
-    function calculateCircularPositions(nodes, radius) {
+    function calculateCircularPositions(nodes, radius, centerX, centerY) {
       const angleStep = (2 * Math.PI) / nodes.length;
       return nodes.map((node, index) => {
         const angle = angleStep * index;
         return {
           ...node,
-          x: radius * Math.cos(angle),
-          y: radius * Math.sin(angle)
+          x: centerX + radius * Math.cos(angle),
+          y: centerY + radius * Math.sin(angle)
         };
       });
     }
+
+    // Create a central "Health" node
+    var healthNode = {
+      id: 0,
+      label: "Health",
+      title: "Health",
+      x: 0,
+      y: 0
+    };
 
     // Create nodes from treatments and conditions
     var nodes = treatmentsAndConditions.map(treatment => ({
@@ -81,26 +90,37 @@
       title: treatment.title
     }));
 
-    // Create edges based on common tags
+    // Create edges connecting nodes to the central "Health" node
     var edges = [];
-    for (let i = 0; i < treatmentsAndConditions.length; i++) {
-      for (let j = i + 1; j < treatmentsAndConditions.length; j++) {
-        const commonTags = treatmentsAndConditions[i].tags.filter(tag => treatmentsAndConditions[j].tags.includes(tag));
-        if (commonTags.length > 0) {
-          edges.push({ from: treatmentsAndConditions[i].id, to: treatmentsAndConditions[j].id });
+    treatmentsAndConditions.forEach(treatment => {
+      if (treatment.tags.includes("Health")) {
+        edges.push({ from: healthNode.id, to: treatment.id });
+      }
+      // Create edges based on common tags
+      for (let i = 0; i < treatmentsAndConditions.length; i++) {
+        for (let j = i + 1; j < treatmentsAndConditions.length; j++) {
+          const commonTags = treatmentsAndConditions[i].tags.filter(tag => treatmentsAndConditions[j].tags.includes(tag));
+          if (commonTags.length > 0) {
+            edges.push({ from: treatmentsAndConditions[i].id, to: treatmentsAndConditions[j].id });
+          }
         }
       }
-    }
+    });
+
+    // Set the center and radius for the circular layout
+    const centerX = 0;
+    const centerY = 0;
+    const radius = 200;
 
     // Initial node positions in a circle
-    nodes = calculateCircularPositions(nodes, 200);
+    nodes = calculateCircularPositions(nodes, radius, centerX, centerY);
 
     // Create network container
     var container = document.getElementById("related-posts-graph");
 
     // Define the data set for the network
     var data = {
-      nodes: new vis.DataSet(nodes),
+      nodes: new vis.DataSet([healthNode, ...nodes]),
       edges: new vis.DataSet(edges)
     };
 
@@ -143,7 +163,7 @@
 
       if (!options.physics.enabled) {
         // When physics is disabled, maintain the circular layout
-        const updatedNodes = calculateCircularPositions(nodes, 200);
+        const updatedNodes = calculateCircularPositions(nodes, radius, centerX, centerY);
         data.nodes.update(updatedNodes);
       }
     });
