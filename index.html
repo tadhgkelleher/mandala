@@ -127,47 +127,47 @@
     };
 
     const options = {
-      physics: {
-        enabled: false  // Start with physics disabled
-      },
-      nodes: {
-        color: {
-          background: '#4CAF50',
-          border: '#2E7D32',
-          highlight: {
-            background: '#81C784',
-            border: '#4CAF50'
-          }
-        },
-        font: {
-          color: '#ffffff',
-          size: 14
-        },
-        borderWidth: 2,
-        size: 25,
-        shape: 'dot',
-        fixed: {
-          x: true,
-          y: true
-        }
-      },
-      edges: {
-        color: {
-          color: '#ffffff',
-          highlight: '#81C784'
-        },
-        smooth: {
-          type: 'continuous',
-          roundness: 0.5
-        }
-      },
-      interaction: {
-        hover: true,
-        tooltipDelay: 200,
-        navigationButtons: true,
-        keyboard: true
+  physics: {
+    enabled: false  // Start with physics disabled
+  },
+  nodes: {
+    color: {
+      background: '#4CAF50',
+      border: '#2E7D32',
+      highlight: {
+        background: '#81C784',
+        border: '#4CAF50'
       }
-    };
+    },
+    font: {
+      color: '#ffffff',
+      size: 14
+    },
+    borderWidth: 2,
+    size: 25,
+    shape: 'dot',
+    fixed: {
+      x: true,
+      y: true
+    }
+  },
+  edges: {
+    color: {
+      color: '#ffffff',
+      highlight: '#81C784'
+    },
+    smooth: { 
+      enabled: false  // Ensure straight lines by disabling smooth curves in the initial state
+    }
+  },
+  interaction: {
+    hover: true,
+    tooltipDelay: 200,
+    navigationButtons: true,
+    keyboard: true
+  }
+};
+
 
     const network = new vis.Network(container, data, options);
     let isPhysicsEnabled = false;
