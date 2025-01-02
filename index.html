@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Treatment and Condition Connections</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css" rel="stylesheet">
+  <style>
+    #related-posts-graph-container {
+      position: relative;
+      background-color: black;
+      margin: 0 auto;
+      width: 100%;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    #related-posts-graph {
+      height: 500px;
+      width: 100%;
+    }
+
+    .expand-button {
+      background-color: blue;
+      color: white;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 4px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<div id="related-posts-graph-container">
+  <div id="related-posts-graph"></div>
+  <button id="expandButton" class="expand-button">Full Screen</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const treatmentsAndConditions = [
+      { id: 1, title: "Cancer Treatment", tags: ["Cancer", "Chemotherapy", "Surgery"] },
+      { id: 2, title: "Diabetes Management", tags: ["Diabetes", "Insulin", "Exercise"] },
+      { id: 3, title: "Heart Disease Treatment", tags: ["Heart", "Cholesterol", "Surgery"] },
+      { id: 4, title: "Asthma Management", tags: ["Asthma", "Inhalers", "Exercise"] },
+      { id: 5, title: "Flu Treatment", tags: ["Flu", "Antiviral", "Rest"] },
+      { id: 6, title: "COVID-19 Vaccination", tags: ["COVID-19", "Vaccine", "Prevention"] },
+      { id: 7, title: "Chronic Pain Relief", tags: ["Chronic Pain", "Medication", "Exercise"] },
+      { id: 8, title: "Mental Health Counseling", tags: ["Mental Health", "Therapy", "Support"] }
+    ];
+
+    function calculateCircularPositions(nodes, radius) {
+      const angleStep = (2 * Math.PI) / nodes.length;
+      return nodes.map((node, index) => {
+        const angle = angleStep * index;
+        return {
+          ...node,
+          x: radius * Math.cos(angle),
+          y: radius * Math.sin(angle)
+        };
+      });
+    }
+
+    var nodes = treatmentsAndConditions.map(treatment => ({
+      id: treatment.id,
+      label: treatment.title,
+      title: treatment.title
+    }));
+
+    var edges = [];
+    for (let i = 0; i < treatmentsAndConditions.length; i++) {
+      for (let j = i + 1; j < treatmentsAndConditions.length; j++) {
+        const commonTags = treatmentsAndConditions[i].tags.filter(tag => treatmentsAndConditions[j].tags.includes(tag));
+        if (commonTags.length > 0) {
+          edges.push({ from: treatmentsAndConditions[i].id, to: treatmentsAndConditions[j].id });
+        }
+      }
+    }
+
+    nodes = calculateCircularPositions(nodes, 200);
+
+    var container = document.getElementById("related-posts-graph");
+    var data = {
+      nodes: new vis.DataSet(nodes),
+      edges: new vis.DataSet(edges)
+    };
+
+    var options = {
+      layout: {
+        improvedLayout: false
+      },
+      physics: {
+        enabled: true,
+        solver: 'forceAtlas2Based',
+        stabilization: {
+          enabled: true,
+          iterations: 200
+        }
+      },
+      interaction: {
+        zoomView: true,
+        dragNodes: true
+      },
+      nodes: {
+        color: '#fff',
+        font: {
+          color: '#ffffff'
+        },
+        size: 12,
+        shape: 'dot',
+        fixed: { x: false, y: false }
+      }
+    };
+
+    var network = new vis.Network(container, data, options);
+
+    document.getElementById("expandButton").addEventListener("click", function () {
+      var isFullScreen = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
+      if (isFullScreen) {
+        document.exitFullscreen();
+      } else {
+        container.requestFullscreen ? container.requestFullscreen() :
+          container.mozRequestFullScreen ? container.mozRequestFullScreen() :
+            container.webkitRequestFullscreen ? container.webkitRequestFullscreen() :
+              container.msRequestFullscreen();
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
