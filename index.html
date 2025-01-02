@@ -164,21 +164,20 @@
 
     // Toggle physics functionality
     document.querySelector(".toggle-physics-button").addEventListener("click", function() {
-      const currentPhysicsState = options.physics.enabled;
-      
       // Toggle the physics setting
+      const currentPhysicsState = options.physics.enabled;
       options.physics.enabled = !currentPhysicsState;
-      
-      // Update the network with new physics setting
+
+      // Reset the network with the new physics state
       network.setOptions(options);
 
-      // If physics is off, keep the circular layout, if physics is on, let the layout adjust automatically
+      // If physics is off, manually update the node positions to the circular layout
       if (!options.physics.enabled) {
         nodes = calculateCircularPositions(nodes, radius, centerX, centerY);
         data.nodes.update(nodes);
       } else {
-        // Reset the node positions and let physics explode the nodes
-        network.stabilize(); // This will make the nodes "explode" when physics is turned on
+        // If physics is on, reset and let the layout automatically adjust
+        network.stabilize(); // This makes the nodes "explode" when physics is enabled
       }
     });
   });
