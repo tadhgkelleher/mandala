@@ -112,7 +112,7 @@
     // Updated circular layout with a larger radius
     const centerX = 0;
     const centerY = 0;
-    const radius = 450; // Increase the radius to spread nodes out more
+    const radius = 500; // Further increase the radius for more spread
     nodes = calculateCircularPositions(nodes, radius, centerX, centerY);
 
     // Create the network
@@ -130,10 +130,10 @@
           iterations: 1000
         },
         barnesHut: {
-          gravitationalConstant: -5000, // Increased gravitational constant for more spread
-          centralGravity: 0.2, // Reduced central gravity
-          springLength: 150, // Increased spring length
-          springConstant: 0.03, // Reduced spring constant
+          gravitationalConstant: -10000, // Increased for more repulsion
+          centralGravity: 0.1, // Further reduce central gravity
+          springLength: 200, // Further increased for more distance between nodes
+          springConstant: 0.02, // Reduced for weaker connections
           damping: 0.09
         }
       },
