@@ -37,6 +37,7 @@
 
 <div id="related-posts-graph-container">
   <div id="related-posts-graph"></div>
+  <button class="toggle-physics-button">Toggle Physics</button>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
@@ -108,15 +109,13 @@
       edges: new vis.DataSet(edges)
     };
 
-    // Set up network options with physics enabled
+    // Set up network options with physics turned off initially
     var options = {
       layout: {
         improvedLayout: false, // We handle the circular layout manually
       },
       physics: {
-        enabled: true, // Enable physics to allow for node movement
-        solver: 'forceAtlas2Based', // You can adjust this solver for different layouts
-        stabilization: { iterations: 200 } // Control the stabilization process
+        enabled: false, // Disable physics to keep the circle static initially
       },
       interaction: {
         zoomView: true,
@@ -148,6 +147,16 @@
     
     // Add the circle edges to the network
     data.edges.add(circleEdge);
+
+    // Toggle physics functionality
+    document.querySelector(".toggle-physics-button").addEventListener("click", function() {
+      // Toggle the physics setting
+      const currentPhysicsState = options.physics.enabled;
+      options.physics.enabled = !currentPhysicsState;
+      
+      // Update the network with new physics setting
+      network.setOptions(options);
+    });
   });
 </script>
 
