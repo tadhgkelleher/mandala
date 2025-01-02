@@ -130,11 +130,11 @@
           iterations: 1000
         },
         barnesHut: {
-          gravitationalConstant: -15000, // Increased for even more repulsion
-          centralGravity: 0.05, // Further reduce central gravity
-          springLength: 250, // Further increased for even more distance between nodes
-          springConstant: 0.015, // Reduced for weaker connections
-          damping: 0.09
+          gravitationalConstant: -20000, // Increased repulsion
+          centralGravity: 0.01, // Reduced gravity to push nodes further apart
+          springLength: 300, // Further increase to push nodes away from each other
+          springConstant: 0.01, // Reduced spring constant to reduce attraction between connected nodes
+          damping: 0.08
         }
       },
       nodes: {
