@@ -119,13 +119,26 @@
       edges: new vis.DataSet(edges)
     };
 
-    // Set up network options with physics turned off initially
+    // Set up network options with exaggerated physics
     var options = {
       layout: {
         improvedLayout: false, // We handle the circular layout manually
       },
       physics: {
-        enabled: false, // Disable physics to keep the circle static initially
+        enabled: false, // Initially, physics is turned off
+        barnesHut: {
+          gravitationalConstant: -5000, // Increased repulsion force
+          springLength: 300, // Longer spring length to make edges stretch further
+          damping: 0.4, // Adjust damping for more explosive movement
+        },
+        forceAtlas2Based: {
+          gravitationalConstant: -5000, // Exaggerated force
+          springLength: 300,
+          springConstant: 0.1,
+        },
+        solver: {
+          iterations: 200, // Increased solver iterations for more movement
+        }
       },
       interaction: {
         zoomView: true,
