@@ -37,7 +37,6 @@
 
 <div id="related-posts-graph-container">
   <div id="related-posts-graph"></div>
-  <button id="togglePhysicsButton" class="toggle-physics-button">Toggle Physics</button>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
@@ -61,7 +60,7 @@
       { id: 15, title: "Mental Health Therapy", tags: ["Mental Health", "Therapy", "Support"] }
     ];
 
-    // Calculate positions for nodes in a circular layout
+    // Function to calculate positions for nodes on a circle
     function calculateCircularPositions(nodes, radius, centerX, centerY) {
       const angleStep = (2 * Math.PI) / nodes.length;
       return nodes.map((node, index) => {
@@ -74,15 +73,6 @@
       });
     }
 
-    // Create a central "Health" node
-    var healthNode = {
-      id: 0,
-      label: "Health",
-      title: "Health",
-      x: 0,
-      y: 0
-    };
-
     // Create nodes from treatments and conditions
     var nodes = treatmentsAndConditions.map(treatment => ({
       id: treatment.id,
@@ -90,29 +80,23 @@
       title: treatment.title
     }));
 
-    // Create edges connecting nodes to the central "Health" node
+    // Create edges connecting nodes based on shared tags
     var edges = [];
-    treatmentsAndConditions.forEach(treatment => {
-      if (treatment.tags.includes("Health")) {
-        edges.push({ from: healthNode.id, to: treatment.id });
-      }
-      // Create edges based on common tags
-      for (let i = 0; i < treatmentsAndConditions.length; i++) {
-        for (let j = i + 1; j < treatmentsAndConditions.length; j++) {
-          const commonTags = treatmentsAndConditions[i].tags.filter(tag => treatmentsAndConditions[j].tags.includes(tag));
-          if (commonTags.length > 0) {
-            edges.push({ from: treatmentsAndConditions[i].id, to: treatmentsAndConditions[j].id });
-          }
+    treatmentsAndConditions.forEach((treatment, index) => {
+      for (let i = index + 1; i < treatmentsAndConditions.length; i++) {
+        const commonTags = treatment.tags.filter(tag => treatmentsAndConditions[i].tags.includes(tag));
+        if (commonTags.length > 0) {
+          edges.push({ from: treatment.id, to: treatmentsAndConditions[i].id });
         }
       }
     });
 
-    // Set the center and radius for the circular layout
+    // Set up a circular layout: center of the circle and radius
     const centerX = 0;
     const centerY = 0;
     const radius = 200;
 
-    // Initial node positions in a circle
+    // Initialize node positions
     nodes = calculateCircularPositions(nodes, radius, centerX, centerY);
 
     // Create network container
@@ -120,22 +104,17 @@
 
     // Define the data set for the network
     var data = {
-      nodes: new vis.DataSet([healthNode, ...nodes]),
+      nodes: new vis.DataSet(nodes),
       edges: new vis.DataSet(edges)
     };
 
     // Set up network options
     var options = {
       layout: {
-        improvedLayout: false
+        improvedLayout: false // We handle the circular layout manually
       },
       physics: {
-        enabled: true,
-        solver: 'forceAtlas2Based',
-        stabilization: {
-          enabled: true,
-          iterations: 200
-        }
+        enabled: false // Disable physics for a static, circular layout
       },
       interaction: {
         zoomView: true,
@@ -147,26 +126,12 @@
           color: '#ffffff'
         },
         size: 12,
-        shape: 'dot',
-        fixed: { x: false, y: false }
+        shape: 'dot'
       }
     };
 
     // Create the network
     var network = new vis.Network(container, data, options);
-
-    // Toggle physics when button is clicked
-    document.getElementById("togglePhysicsButton").addEventListener("click", function () {
-      const isPhysicsEnabled = options.physics.enabled;
-      options.physics.enabled = !isPhysicsEnabled;
-      network.setOptions(options);
-
-      if (!options.physics.enabled) {
-        // When physics is disabled, maintain the circular layout
-        const updatedNodes = calculateCircularPositions(nodes, radius, centerX, centerY);
-        data.nodes.update(updatedNodes);
-      }
-    });
   });
 </script>
 
