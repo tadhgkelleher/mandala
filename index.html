@@ -1,215 +1,220 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Music Venue Network Analysis</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css" rel="stylesheet">
-    <style>
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #121212;
-            color: #EAEAEA;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Music Genre and Artist Connections</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css" rel="stylesheet">
+  <style>
+    #related-posts-graph-container {
+      position: relative;
+      background-color: black;
+      margin: 0 auto;
+      width: 100%;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
-        .main-container {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
+    #related-posts-graph {
+      height: 700px;
+      width: 100%;
+    }
 
-        #network-container {
-            width: 80%;
-            height: 80%;
-            border-radius: 12px;
-            background: #1A1A1A;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-        }
+    .toggle-physics-button {
+      background-color: #4a90e2;
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      margin-top: 10px;
+      cursor: pointer;
+      font-size: 16px;
+    }
 
-        .controls {
-            background: #2C2C2C;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 20px;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-        }
-
-        .controls button, .controls select, .controls input {
-            background: #4A90E2;
-            color: #FFFFFF;
-            border: none;
-            padding: 12px 18px;
-            border-radius: 8px;
-            cursor: pointer;
-            width: 100%;
-            transition: background 0.3s ease;
-            margin: 6px 0;
-            font-size: 14px;
-        }
-
-        .controls button:hover {
-            background: #357ABD;
-        }
-
-        .controls input, .controls select {
-            width: 80%;
-        }
-
-        .stats {
-            font-size: 14px;
-            color: #B0B0B0;
-            margin-top: 20px;
-        }
-
-        .tag {
-            display: inline-block;
-            background: #4A90E2;
-            padding: 4px 12px;
-            border-radius: 16px;
-            font-size: 14px;
-            margin: 4px 6px;
-            color: #FFFFFF;
-        }
-
-        .severity-high { background: #FF4444; }
-        .severity-medium { background: #FFBB33; }
-        .severity-low { background: #00C851; }
-
-        .controls label {
-            font-size: 16px;
-            color: #EAEAEA;
-        }
-    </style>
+    .toggle-physics-button:hover {
+      background-color: #357abd;
+    }
+  </style>
 </head>
 <body>
 
-    <div class="main-container">
-        <!-- Main Network Visualization -->
-        <div id="network-container"></div>
-    </div>
+<div id="related-posts-graph-container">
+  <div id="related-posts-graph"></div>
+  <button class="toggle-physics-button">Enable Physics</button>
+</div>
 
-    <!-- Controls Panel -->
-    <div class="controls">
-        <h3>Music Venue Network Controls</h3>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const musicGenresAndArtists = [
+      { id: 1, title: "Alice Springs", tags: ["Rock", "Blues", "Producer"], severity: "medium", genre: "Rock" },
+      { id: 2, title: "Catch the Monkey", tags: ["Indie", "Pop", "Drummer"], severity: "high", genre: "Pop" },
+      { id: 3, title: "Glee Club", tags: ["Pop", "Indie", "Arranger"], severity: "low", genre: "Pop" },
+      { id: 4, title: "Hank Half Head & the Rambling Turkeys", tags: ["Country", "Folk", "Manager"], severity: "medium", genre: "Country" },
+      { id: 5, title: "Hank Halfhead And The Rambling Turkeys", tags: ["Country", "Folk", "Manager"], severity: "medium", genre: "Country" },
+      { id: 6, title: "Interference", tags: ["Alternative", "Rock", "Counselling"], severity: "medium", genre: "Alternative" },
+      { id: 7, title: "Justin Healy", tags: ["Jazz", "Folk", "Producer", "Drummer"], severity: "low", genre: "Jazz" },
+      { id: 8, title: "Lir", tags: ["Rock", "Indie", "Producer", "Manager"], severity: "high", genre: "Rock" },
+      { id: 9, title: "Mik Pyro and the Dublin Blues Cartel", tags: ["Blues", "Rock", "Arranger"], severity: "medium", genre: "Blues" },
+      { id: 10, title: "Satanta", tags: ["Indie", "Pop", "Manager"], severity: "medium", genre: "Pop" },
+      { id: 11, title: "Sugar Honey", tags: ["Funk", "Soul", "Producer"], severity: "medium", genre: "Funk" },
+      { id: 12, title: "The 4 Of Us", tags: ["Rock", "Pop", "Drummer"], severity: "high", genre: "Rock" },
+      { id: 13, title: "The Bogey Boys", tags: ["Punk", "Rock", "Manager"], severity: "high", genre: "Punk" },
+      { id: 14, title: "The Forget Me Nots", tags: ["Indie", "Pop", "Counselling"], severity: "low", genre: "Indie" },
+      { id: 15, title: "The Glee Club", tags: ["Pop", "Indie", "Producer"], severity: "medium", genre: "Pop" },
+      { id: 16, title: "The Golden Horde", tags: ["Rock", "Alternative", "Arranger"], severity: "high", genre: "Rock" },
+      { id: 17, title: "the late late show", tags: ["Jazz", "Blues", "Manager"], severity: "medium", genre: "Blues" },
+      { id: 18, title: "The Racketeers", tags: ["Blues", "Rock", "Producer"], severity: "medium", genre: "Blues" }
+    ];
 
-        <button id="toggle-physics">Toggle Physics</button>
-        <button id="circular-layout">Circular Layout</button>
-        <button id="force-layout">Force Layout</button>
+    function calculateCircularPositions(nodes, radius, centerX, centerY) {
+      const angleStep = (2 * Math.PI) / nodes.length;
+      return nodes.map((node, index) => {
+        const angle = angleStep * index;
+        return {
+          id: node.id,
+          label: node.label,
+          title: node.title,
+          x: centerX + radius * Math.cos(angle),
+          y: centerY + radius * Math.sin(angle)
+        };
+      });
+    }
 
-        <div class="stats">
-            <p>Bands: <span id="node-count">0</span></p>
-            <p>Connections: <span id="edge-count">0</span></p>
-        </div>
-    </div>
+    let nodes = musicGenresAndArtists.map(music => ({
+      id: music.id,
+      label: music.title,
+      title: `${music.title}\nGenre: ${music.genre}\nTags: ${music.tags.join(", ")}\nSeverity: ${music.severity}`
+    }));
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const musicData = [
-                { id: 1, title: "Alice Springs", tags: ["Rock", "Blues", "Producer"], severity: "medium", genre: "Rock" },
-                { id: 2, title: "Catch the Monkey", tags: ["Indie", "Pop", "Drummer"], severity: "high", genre: "Pop" },
-                { id: 3, title: "Glee Club", tags: ["Pop", "Indie", "Arranger"], severity: "low", genre: "Pop" },
-                { id: 4, title: "Hank Half Head & the Rambling Turkeys", tags: ["Country", "Folk", "Manager"], severity: "medium", genre: "Country" },
-                { id: 5, title: "Hank Halfhead And The Rambling Turkeys", tags: ["Country", "Folk", "Manager"], severity: "medium", genre: "Country" },
-                { id: 6, title: "Interference", tags: ["Alternative", "Rock", "Counselling"], severity: "medium", genre: "Alternative" },
-                { id: 7, title: "Justin Healy", tags: ["Jazz", "Folk", "Producer", "Drummer"], severity: "low", genre: "Jazz" },
-                { id: 8, title: "Lir", tags: ["Rock", "Indie", "Producer", "Manager"], severity: "high", genre: "Rock" },
-                { id: 9, title: "Mik Pyro and the Dublin Blues Cartel", tags: ["Blues", "Rock", "Arranger"], severity: "medium", genre: "Blues" },
-                { id: 10, title: "Satanta", tags: ["Indie", "Pop", "Manager"], severity: "medium", genre: "Pop" },
-                { id: 11, title: "Sugar Honey", tags: ["Funk", "Soul", "Producer"], severity: "medium", genre: "Funk" },
-                { id: 12, title: "The 4 Of Us", tags: ["Rock", "Pop", "Drummer"], severity: "high", genre: "Rock" },
-                { id: 13, title: "The Bogey Boys", tags: ["Punk", "Rock", "Manager"], severity: "high", genre: "Punk" },
-                { id: 14, title: "The Forget Me Nots", tags: ["Indie", "Pop", "Counselling"], severity: "low", genre: "Indie" },
-                { id: 15, title: "The Glee Club", tags: ["Pop", "Indie", "Producer"], severity: "medium", genre: "Pop" },
-                { id: 16, title: "The Golden Horde", tags: ["Rock", "Alternative", "Arranger"], severity: "high", genre: "Rock" },
-                { id: 17, title: "the late late show", tags: ["Jazz", "Blues", "Manager"], severity: "medium", genre: "Blues" },
-                { id: 18, title: "The Racketeers", tags: ["Blues", "Rock", "Producer"], severity: "medium", genre: "Blues" }
-            ];
+    let edges = [];
+    musicGenresAndArtists.forEach((music, index) => {
+      for (let i = index + 1; i < musicGenresAndArtists.length; i++) {
+        const commonTags = music.tags.filter(tag =>
+          musicGenresAndArtists[i].tags.includes(tag)
+        );
+        if (commonTags.length > 0) {
+          edges.push({
+            from: music.id,
+            to: musicGenresAndArtists[i].id,
+            title: `Common tags: ${commonTags.join(", ")}`,
+            width: commonTags.length * 1.5,
+            length: 400
+          });
+        }
+      }
+    });
 
-            // Nodes
-            const nodes = new vis.DataSet(
-                musicData.map(item => ({
-                    id: item.id,
-                    label: item.title,
-                    title: `${item.title}\nGenre: ${item.genre}\nTags: ${item.tags.join(', ')}`,
-                    color: {
-                        background: item.severity === "high" ? "#FF4444" : 
-                                  item.severity === "medium" ? "#FFBB33" : "#00C851",
-                        border: "#2E7D32",
-                        highlight: { background: '#81C784', border: '#4CAF50' }
-                    },
-                    size: item.severity === "high" ? 30 : 
-                          item.severity === "medium" ? 25 : 20
-                }))
-            );
+    const centerX = 0;
+    const centerY = 0;
+    const radius = 800;
+    nodes = calculateCircularPositions(nodes, radius, centerX, centerY);
 
-            // Edges (adding connections based on shared tags including roles)
-            const edges = new vis.DataSet();
-            musicData.forEach((item1, index) => {
-                musicData.slice(index + 1).forEach(item2 => {
-                    const commonTags = item1.tags.filter(tag => 
-                        item2.tags.includes(tag)
-                    );
-                    if (commonTags.length > 0) {
-                        edges.add({
-                            from: item1.id,
-                            to: item2.id,
-                            label: `Shared: ${commonTags.join(', ')}`,
-                            color: { color: '#FFFFFF', highlight: '#FF4444' },
-                            width: 2
-                        });
-                    }
-                });
-            });
+    const container = document.getElementById("related-posts-graph");
+    const data = {
+      nodes: new vis.DataSet(nodes),
+      edges: new vis.DataSet(edges)
+    };
 
-            const container = document.getElementById('network-container');
-            const data = { nodes, edges };
-            const options = {
-                physics: { enabled: true },
-                layout: { randomSeed: 2 },
-                nodes: {
-                    shape: 'dot',
-                    size: 20,
-                    font: { size: 14, face: 'Arial' }
-                },
-                edges: {
-                    arrows: 'to',
-                    smooth: { enabled: true }
-                },
-                interaction: { hover: true }
-            };
+    const options = {
+      physics: {
+        enabled: false  // Start with physics disabled
+      },
+      nodes: {
+        color: {
+          background: '#4CAF50',
+          border: '#2E7D32',
+          highlight: {
+            background: '#81C784',
+            border: '#4CAF50'
+          }
+        },
+        font: {
+          color: '#ffffff',
+          size: 14
+        },
+        borderWidth: 2,
+        size: 25,
+        shape: 'dot',
+        fixed: {
+          x: true,
+          y: true
+        }
+      },
+      edges: {
+        color: {
+          color: '#ffffff',
+          highlight: '#81C784'
+        },
+        smooth: {
+          type: 'continuous',
+          roundness: 0.5
+        }
+      },
+      interaction: {
+        hover: true,
+        tooltipDelay: 200,
+        navigationButtons: true,
+        keyboard: true
+      }
+    };
 
-            const network = new vis.Network(container, data, options);
+    const network = new vis.Network(container, data, options);
+    let isPhysicsEnabled = false;
+    const toggleButton = document.querySelector(".toggle-physics-button");
 
-            // Toggle Physics
-            document.getElementById("toggle-physics").addEventListener("click", () => {
-                const currentPhysics = network.getOptions().physics.enabled;
-                network.setOptions({
-                    physics: { enabled: !currentPhysics }
-                });
-            });
-
-            // Layout Buttons
-            document.getElementById("circular-layout").addEventListener("click", () => {
-                network.setOptions({ layout: { improvedLayout: true, randomSeed: 1 } });
-            });
-
-            document.getElementById("force-layout").addEventListener("click", () => {
-                network.setOptions({ layout: { randomSeed: 2 } });
-            });
+    toggleButton.addEventListener("click", function() {
+      isPhysicsEnabled = !isPhysicsEnabled;
+      if (isPhysicsEnabled) {
+        toggleButton.textContent = "Disable Physics";
+        network.setOptions({
+          physics: {
+            enabled: true,
+            stabilization: {
+              enabled: true,
+              iterations: 1000,
+              updateInterval: 25
+            },
+            barnesHut: {
+              gravitationalConstant: -50000,
+              centralGravity: 0.03,
+              springLength: 400,
+              springConstant: 0.005,
+              damping: 0.09,
+              avoidOverlap: 1
+            },
+            repulsion: {
+              nodeDistance: 400
+            }
+          },
+          nodes: {
+            fixed: {
+              x: false,
+              y: false
+            }
+          }
         });
-    </script>
+      } else {
+        toggleButton.textContent = "Enable Physics";
+        network.setOptions({ 
+          physics: { 
+            enabled: false 
+          },
+          nodes: {
+            fixed: {
+              x: true,
+              y: true
+            }
+          }
+        });
+        const updatedNodes = calculateCircularPositions(nodes, radius, centerX, centerY);
+        data.nodes.update(updatedNodes);
+      }
+    });
+  });
+</script>
+
 </body>
 </html>
