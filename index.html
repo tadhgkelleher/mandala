@@ -66,15 +66,7 @@
       { id: 15, title: "The Glee Club", tags: ["Pop", "Indie", "Producer"], genre: "Pop" },
       { id: 16, title: "The Golden Horde", tags: ["Rock", "Alternative", "Arranger"], genre: "Rock" },
       { id: 17, title: "the late late show", tags: ["Jazz", "Blues", "Manager"], genre: "Blues" },
-      { id: 18, title: "The Racketeers", tags: ["Blues", "Rock", "Producer"], genre: "Blues" },
-      // Additional sample data
-      { id: 19, title: "Electric Dreamers", tags: ["Electronic", "Indie", "Producer"], genre: "Electronic" },
-      { id: 20, title: "Mountain Blues", tags: ["Blues", "Rock", "Guitarist"], genre: "Blues" },
-      { id: 21, title: "City Lights", tags: ["Pop", "Rock", "Vocalist"], genre: "Pop" },
-      { id: 22, title: "Soul Highway", tags: ["Soul", "Funk", "Bassist"], genre: "Soul" },
-      { id: 23, title: "Echo of Silence", tags: ["Alternative", "Rock", "Drummer"], genre: "Alternative" },
-      { id: 24, title: "Moonlit Melody", tags: ["Jazz", "Soul", "Saxophonist"], genre: "Jazz" },
-      { id: 25, title: "Electric Mirage", tags: ["Rock", "Indie", "Bassist"], genre: "Rock" }
+      { id: 18, title: "The Racketeers", tags: ["Blues", "Rock", "Producer"], genre: "Blues" }
     ];
 
     function calculateCircularPositions(nodes, radius, centerX, centerY) {
@@ -107,7 +99,7 @@
           edges.push({
             from: music.id,
             to: musicGenresAndArtists[i].id,
-            title: `Common tags: ${commonTags.join(", ")}`,
+            label: `Common tags: ${commonTags.join(", ")}`,
             width: commonTags.length * 1.5,
             length: 400
           });
@@ -117,7 +109,7 @@
 
     const centerX = 0;
     const centerY = 0;
-    const radius = 800;
+    let radius = 800;
     nodes = calculateCircularPositions(nodes, radius, centerX, centerY);
 
     const container = document.getElementById("related-posts-graph");
@@ -128,7 +120,7 @@
 
     const options = {
       physics: {
-        enabled: false  // Start with physics disabled
+        enabled: false
       },
       nodes: {
         color: {
@@ -159,6 +151,11 @@
         smooth: {
           type: 'continuous',
           roundness: 0.5
+        },
+        font: {
+          color: '#ffffff',
+          size: 12,
+          align: 'top'
         }
       },
       interaction: {
@@ -177,6 +174,7 @@
       isPhysicsEnabled = !isPhysicsEnabled;
       if (isPhysicsEnabled) {
         toggleButton.textContent = "Disable Physics";
+        radius = 1000; // Increase the radius for more space
         network.setOptions({
           physics: {
             enabled: true,
@@ -188,13 +186,13 @@
             barnesHut: {
               gravitationalConstant: -50000,
               centralGravity: 0.03,
-              springLength: 400,
+              springLength: 500, // Increased spring length
               springConstant: 0.005,
               damping: 0.09,
               avoidOverlap: 1
             },
             repulsion: {
-              nodeDistance: 400
+              nodeDistance: 500
             }
           },
           nodes: {
@@ -204,6 +202,9 @@
             }
           }
         });
+        // Update the nodes with the new radius when physics is enabled
+        const updatedNodes = calculateCircularPositions(nodes, radius, centerX, centerY);
+        data.nodes.update(updatedNodes);
       } else {
         toggleButton.textContent = "Enable Physics";
         network.setOptions({ 
