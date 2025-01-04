@@ -1,121 +1,228 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Career Network Visualization</title>
-    <script type="text/javascript" src="https://unpkg.com/vis-network@9.0.4/dist/vis-network.min.js"></script>
-    <style>
-        #related-posts-graph {
-            width: 100%;
-            height: 600px;
-            border: 1px solid lightgray;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Music Genre and Artist Connections</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css" rel="stylesheet">
+  <style>
+    #related-posts-graph-container {
+      position: relative;
+      background-color: black;
+      margin: 0 auto;
+      width: 100%;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    #related-posts-graph {
+      height: 700px;
+      width: 100%;
+    }
+
+    .toggle-physics-button {
+      background-color: #4a90e2;
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      margin-top: 10px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .toggle-physics-button:hover {
+      background-color: #357abd;
+    }
+  </style>
 </head>
 <body>
-    <h1>Career Network Visualization</h1>
-    <div id="related-posts-graph"></div>
 
-    <script>
-        // Nodes representing career milestones
-        let nodes = [
-            { id: 1, label: "Career Start", tags: ["Pop", "Vocalist", "Debut"], genre: "Pop", role: "Vocalist", description: "Started career as a vocalist in a debut album." },
-            { id: 2, label: "The Electric Wave", tags: ["Rock", "Producer", "Collaboration"], genre: "Rock", role: "Producer", description: "Collaborated as a producer for an iconic rock band during their early years." },
-            { id: 3, label: "SynthWave Revolution", tags: ["Electronic", "Songwriter", "Collaboration"], genre: "Electronic", role: "Songwriter", description: "Contributed as a primary songwriter for a breakthrough electronic group." },
-            { id: 4, label: "The Unseen", tags: ["Alternative", "Vocalist", "Debut"], genre: "Alternative", role: "Vocalist", description: "Lead vocalist in an alternative rock band during their debut album." },
-            { id: 5, label: "Vibe and Rhythm", tags: ["Soul", "Drummer", "Collaboration"], genre: "Soul", role: "Drummer", description: "Played drums for a soul band, contributing to their hit single." },
-            { id: 6, label: "Echoes of Tomorrow", tags: ["Indie", "Manager", "Tour"], genre: "Indie", role: "Manager", description: "Managed an indie band's nationwide tour, boosting their popularity." },
-            { id: 7, label: "The Phoenix Project", tags: ["Funk", "Bassist", "Comeback"], genre: "Funk", role: "Bassist", description: "Bassist in a funk group known for their high-energy comeback album." },
-            { id: 8, label: "RetroFunk Explosion", tags: ["Funk", "Arranger", "Studio"], genre: "Funk", role: "Arranger", description: "Arranged music for a funk band in the studio, creating a timeless sound." },
-            { id: 9, label: "Harmonic Waves", tags: ["Jazz", "Collaborator", "Producer"], genre: "Jazz", role: "Producer", description: "Produced a collaborative jazz album with international artists." },
-            { id: 10, label: "Soul Star Project", tags: ["Soul", "Songwriter", "Solo"], genre: "Soul", role: "Songwriter", description: "Launched a solo career with soulful songwriting, producing two chart-topping singles." },
-            { id: 11, label: "City Lights Band", tags: ["Pop", "Guitarist", "Group"], genre: "Pop", role: "Guitarist", description: "Guitarist in a well-known pop group, contributing to their first successful album." },
-            { id: 12, label: "Moonlit Sounds", tags: ["Blues", "Vocalist", "Collaboration"], genre: "Blues", role: "Vocalist", description: "Vocalist in a blues band, contributing to several albums over a decade." },
-            { id: 13, label: "Digital Horizon", tags: ["Electronic", "DJ", "Producer"], genre: "Electronic", role: "DJ/Producer", description: "DJ and producer known for mixing electronic sounds with live performances." },
-            { id: 14, label: "Sunset Strings", tags: ["Folk", "Guitarist", "Solo"], genre: "Folk", role: "Guitarist", description: "Folk guitarist in a band, later transitioning into a solo career." },
-            { id: 15, label: "Electric Soul Collective", tags: ["Soul", "Band", "Collaborator"], genre: "Soul", role: "Collaborator", description: "Collaborated with various artists to produce a series of soul albums." },
-            { id: 16, label: "Northern Winds", tags: ["Indie", "Manager", "Festival"], genre: "Indie", role: "Manager", description: "Managed an indie band's performance at major music festivals." }
-        ];
+<div id="related-posts-graph-container">
+  <div id="related-posts-graph"></div>
+  <button class="toggle-physics-button">Enable Physics</button>
+</div>
 
-        // Edges representing connections between nodes (career relationships)
-        let edges = [
-            { from: 1, to: 2, label: "Producer" },
-            { from: 2, to: 3, label: "Songwriter" },
-            { from: 3, to: 4, label: "Vocalist" },
-            { from: 4, to: 5, label: "Drummer" },
-            { from: 5, to: 6, label: "Manager" },
-            { from: 6, to: 7, label: "Bassist" },
-            { from: 7, to: 8, label: "Arranger" },
-            { from: 8, to: 9, label: "Producer" },
-            { from: 9, to: 10, label: "Songwriter" },
-            { from: 10, to: 11, label: "Guitarist" },
-            { from: 11, to: 12, label: "Vocalist" },
-            { from: 12, to: 13, label: "DJ/Producer" },
-            { from: 13, to: 14, label: "Guitarist" },
-            { from: 14, to: 15, label: "Collaborator" },
-            { from: 15, to: 16, label: "Manager" }
-        ];
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const musicGenresAndArtists = [
+      { id: 1, title: "Alice Springs", tags: ["Rock", "Blues", "Producer"], genre: "Rock" },
+      { id: 2, title: "Catch the Monkey", tags: ["Indie", "Pop", "Drummer"], genre: "Pop" },
+      { id: 3, title: "Glee Club", tags: ["Pop", "Indie", "Arranger"], genre: "Pop" },
+      { id: 4, title: "Hank Half Head & the Rambling Turkeys", tags: ["Country", "Folk", "Manager"], genre: "Country" },
+      { id: 5, title: "Hank Halfhead And The Rambling Turkeys", tags: ["Country", "Folk", "Manager"], genre: "Country" },
+      { id: 6, title: "Interference", tags: ["Alternative", "Rock", "Counselling"], genre: "Alternative" },
+      { id: 7, title: "Justin Healy", tags: ["Jazz", "Folk", "Producer", "Drummer"], genre: "Jazz" },
+      { id: 8, title: "Lir", tags: ["Rock", "Indie", "Producer", "Manager"], genre: "Rock" },
+      { id: 9, title: "Mik Pyro and the Dublin Blues Cartel", tags: ["Blues", "Rock", "Arranger"], genre: "Blues" },
+      { id: 10, title: "Satanta", tags: ["Indie", "Pop", "Manager"], genre: "Pop" },
+      { id: 11, title: "Sugar Honey", tags: ["Funk", "Soul", "Producer"], genre: "Funk" },
+      { id: 12, title: "The 4 Of Us", tags: ["Rock", "Pop", "Drummer"], genre: "Rock" },
+      { id: 13, title: "The Bogey Boys", tags: ["Punk", "Rock", "Manager"], genre: "Punk" },
+      { id: 14, title: "The Forget Me Nots", tags: ["Indie", "Pop", "Counselling"], genre: "Indie" },
+      { id: 15, title: "The Glee Club", tags: ["Pop", "Indie", "Producer"], genre: "Pop" },
+      { id: 16, title: "The Golden Horde", tags: ["Rock", "Alternative", "Arranger"], genre: "Rock" },
+      { id: 17, title: "the late late show", tags: ["Jazz", "Blues", "Manager"], genre: "Blues" },
+      { id: 18, title: "The Racketeers", tags: ["Blues", "Rock", "Producer"], genre: "Blues" },
+      // Additional sample data
+      { id: 19, title: "Electric Dreamers", tags: ["Electronic", "Indie", "Producer"], genre: "Electronic" },
+      { id: 20, title: "Mountain Blues", tags: ["Blues", "Rock", "Guitarist"], genre: "Blues" },
+      { id: 21, title: "City Lights", tags: ["Pop", "Rock", "Vocalist"], genre: "Pop" },
+      { id: 22, title: "Soul Highway", tags: ["Soul", "Funk", "Bassist"], genre: "Soul" },
+      { id: 23, title: "Echo of Silence", tags: ["Alternative", "Rock", "Drummer"], genre: "Alternative" },
+      { id: 24, title: "Moonlit Melody", tags: ["Jazz", "Soul", "Saxophonist"], genre: "Jazz" },
+      { id: 25, title: "Electric Mirage", tags: ["Rock", "Indie", "Bassist"], genre: "Rock" }
+    ];
 
-        // Configuration for the visualization
-        const container = document.getElementById("related-posts-graph");
-        const data = {
-            nodes: new vis.DataSet(nodes),
-            edges: new vis.DataSet(edges)
+    function calculateCircularPositions(nodes, radius, centerX, centerY) {
+      const angleStep = (2 * Math.PI) / nodes.length;
+      return nodes.map((node, index) => {
+        const angle = angleStep * index;
+        return {
+          id: node.id,
+          label: node.label,
+          title: node.title,
+          x: centerX + radius * Math.cos(angle),
+          y: centerY + radius * Math.sin(angle)
         };
+      });
+    }
 
-        const options = {
-            physics: {
-                enabled: true, // Enable physics for interactive movement of nodes
-                stabilization: {iterations: 1000, updateInterval: 25}, // Control stabilization behavior
-                solver: 'forceAtlas2Based', // Use the force-based solver for realistic movement
-                forceAtlas2Based: {
-                    gravitationalConstant: -50,
-                    centralGravity: 0.1,
-                    springLength: 100,
-                    springConstant: 0.08,
-                    damping: 0.4
-                }
+    let nodes = musicGenresAndArtists.map(music => ({
+      id: music.id,
+      label: music.title,
+      title: `${music.title}\nGenre: ${music.genre}\nTags: ${music.tags.join(", ")}`
+    }));
+
+    let edges = [];
+    musicGenresAndArtists.forEach((music, index) => {
+      for (let i = index + 1; i < musicGenresAndArtists.length; i++) {
+        const commonTags = music.tags.filter(tag =>
+          musicGenresAndArtists[i].tags.includes(tag)
+        );
+        if (commonTags.length > 0) {
+          edges.push({
+            from: music.id,
+            to: musicGenresAndArtists[i].id,
+            title: `Common tags: ${commonTags.join(", ")}`,
+            width: commonTags.length * 1.5,
+            length: 400
+          });
+        }
+      }
+    });
+
+    const centerX = 0;
+    const centerY = 0;
+    const radius = 800;
+    nodes = calculateCircularPositions(nodes, radius, centerX, centerY);
+
+    const container = document.getElementById("related-posts-graph");
+    const data = {
+      nodes: new vis.DataSet(nodes),
+      edges: new vis.DataSet(edges)
+    };
+
+    const options = {
+      physics: {
+        enabled: false  // Start with physics disabled
+      },
+      nodes: {
+        color: {
+          background: '#4CAF50',
+          border: '#2E7D32',
+          highlight: {
+            background: '#81C784',
+            border: '#4CAF50'
+          }
+        },
+        font: {
+          color: '#ffffff',
+          size: 14
+        },
+        borderWidth: 2,
+        size: 25,
+        shape: 'dot',
+        fixed: {
+          x: true,
+          y: true
+        }
+      },
+      edges: {
+        color: {
+          color: '#ffffff',
+          highlight: '#81C784'
+        },
+        smooth: {
+          type: 'continuous',
+          roundness: 0.5
+        }
+      },
+      interaction: {
+        hover: true,
+        tooltipDelay: 200,
+        navigationButtons: true,
+        keyboard: true
+      }
+    };
+
+    const network = new vis.Network(container, data, options);
+    let isPhysicsEnabled = false;
+    const toggleButton = document.querySelector(".toggle-physics-button");
+
+    toggleButton.addEventListener("click", function() {
+      isPhysicsEnabled = !isPhysicsEnabled;
+      if (isPhysicsEnabled) {
+        toggleButton.textContent = "Disable Physics";
+        network.setOptions({
+          physics: {
+            enabled: true,
+            stabilization: {
+              enabled: true,
+              iterations: 1000,
+              updateInterval: 25
             },
-            nodes: {
-                shape: 'dot',
-                size: 25,
-                font: {size: 14, color: '#ffffff'},
-                color: {
-                    background: '#4CAF50',
-                    border: '#2E7D32',
-                    highlight: {
-                        background: '#81C784',
-                        border: '#4CAF50'
-                    }
-                }
+            barnesHut: {
+              gravitationalConstant: -50000,
+              centralGravity: 0.03,
+              springLength: 400,
+              springConstant: 0.005,
+              damping: 0.09,
+              avoidOverlap: 1
             },
-            edges: {
-                color: '#ffffff',
-                smooth: {
-                    type: 'continuous',
-                    roundness: 0.5
-                },
-                width: 2,
-                font: {
-                    color: '#ffffff',
-                    size: 12,
-                    align: 'top'
-                }
-            },
-            interaction: {
-                hover: true,
-                tooltipDelay: 200,
-                navigationButtons: true,
-                keyboard: true
-            },
-            layout: {
-                randomSeed: 2
+            repulsion: {
+              nodeDistance: 400
             }
-        };
+          },
+          nodes: {
+            fixed: {
+              x: false,
+              y: false
+            }
+          }
+        });
+      } else {
+        toggleButton.textContent = "Enable Physics";
+        network.setOptions({ 
+          physics: { 
+            enabled: false 
+          },
+          nodes: {
+            fixed: {
+              x: true,
+              y: true
+            }
+          }
+        });
+        const updatedNodes = calculateCircularPositions(nodes, radius, centerX, centerY);
+        data.nodes.update(updatedNodes);
+      }
+    });
+  });
+</script>
 
-        // Initialize and render the network
-        const network = new vis.Network(container, data, options);
-    </script>
 </body>
 </html>
