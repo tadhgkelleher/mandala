@@ -87,7 +87,9 @@
       id: music.id,
       label: music.title,
       title: `${music.title}\nGenre: ${music.genre}\nTags: ${music.tags.join(", ")}`,
-      color: generateColorForNode(music) // Apply a color based on the genre
+      color: generateColorForNode(music), // Apply a color based on the genre
+      connections: 0, // Placeholder for counting connections
+      size: 25 // Default node size
     }));
 
     function generateColorForNode(music) {
@@ -124,8 +126,20 @@
               size: 12
             }
           });
+          // Increment the connection count for each node
+          nodes[music.id - 1].connections++;
+          nodes[musicGenresAndArtists[i].id - 1].connections++;
         }
       }
+    });
+
+    // Scale the size of the nodes based on their connections
+    nodes = nodes.map(node => {
+      const connectionSize = Math.max(25, 25 + node.connections * 5); // Increase size with connections, default min size is 25
+      return {
+        ...node,
+        size: connectionSize
+      };
     });
 
     const centerX = 0;
@@ -157,7 +171,6 @@
           size: 14
         },
         borderWidth: 2,
-        size: 25,
         shape: 'dot',
         fixed: {
           x: true,
@@ -220,34 +233,17 @@
               avoidOverlap: 1
             },
             repulsion: {
-              nodeDistance: 500
-            }
-          },
-          nodes: {
-            fixed: {
-              x: false,
-              y: false
+              nodeDistance: 300
             }
           }
         });
-        // Update the nodes with the new radius when physics is enabled
-        const updatedNodes = calculateCircularPositions(nodes, radius, centerX, centerY);
-        data.nodes.update(updatedNodes);
       } else {
         toggleButton.textContent = "Enable Physics";
-        network.setOptions({ 
-          physics: { 
-            enabled: false 
-          },
-          nodes: {
-            fixed: {
-              x: true,
-              y: true
-            }
+        network.setOptions({
+          physics: {
+            enabled: false
           }
         });
-        const updatedNodes = calculateCircularPositions(nodes, radius, centerX, centerY);
-        data.nodes.update(updatedNodes);
       }
     });
   });
