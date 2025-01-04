@@ -85,6 +85,8 @@
     const nodes = new vis.DataSet([]);
     const edges = new vis.DataSet([]);
 
+    const connectionCount = {};
+
     treatmentsAndConditions.forEach(condition => {
       const conditionNode = {
         id: condition.id,
@@ -100,7 +102,18 @@
           nodes.add({ id: tag, label: tag, group: "tag" });
         }
         edges.add({ from: condition.id, to: tag });
+
+        // Count connections for nodes
+        connectionCount[condition.id] = (connectionCount[condition.id] || 0) + 1;
+        connectionCount[tag] = (connectionCount[tag] || 0) + 1;
       });
+    });
+
+    // Update node size based on connections
+    nodes.forEach(node => {
+      const connectionSize = connectionCount[node.id] || 1;
+      node.size = connectionSize * 4; // Adjust size scaling factor as needed
+      nodes.update(node);
     });
 
     const container = document.getElementById("related-posts-graph");
@@ -108,7 +121,6 @@
     const options = {
       nodes: {
         shape: 'dot',
-        size: 10,
         font: { size: 16 },
       },
       physics: {
