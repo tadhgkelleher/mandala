@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Music Genre and Artist Connections</title>
+  <title>Cosmic Music Genre and Artist Connections</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css" rel="stylesheet">
   <style>
     #related-posts-graph-container {
       position: relative;
-      background-color: black;
+      background-color: #111111; /* Cosmic black background */
       margin: 0 auto;
       width: 100%;
       padding: 10px;
@@ -86,8 +86,24 @@
     let nodes = musicGenresAndArtists.map(music => ({
       id: music.id,
       label: music.title,
-      title: `${music.title}\nGenre: ${music.genre}\nTags: ${music.tags.join(", ")}`
+      title: `${music.title}\nGenre: ${music.genre}\nTags: ${music.tags.join(", ")}`,
+      color: generateColorForNode(music) // Apply a color based on the genre
     }));
+
+    function generateColorForNode(music) {
+      const colorMap = {
+        Rock: '#6A0DAD',      // Purple
+        Pop: '#FF4500',       // Orange
+        Blues: '#1E90FF',     // Blue
+        Funk: '#FFD700',      // Gold
+        Country: '#008000',   // Green
+        Jazz: '#800080',      // Purple
+        Alternative: '#9C27B0',// Violet
+        Indie: '#FF6347',     // Tomato
+        Punk: '#D32F2F',      // Red
+      };
+      return colorMap[music.genre] || '#FFFFFF';  // Default to white
+    }
 
     let edges = [];
     musicGenresAndArtists.forEach((music, index) => {
@@ -101,7 +117,12 @@
             to: musicGenresAndArtists[i].id,
             label: `Common tags: ${commonTags.join(", ")}`,
             width: commonTags.length * 1.5,
-            length: 400
+            length: 400,
+            color: '#FFD700',  // Golden edges for common tags
+            font: {
+              color: '#FFFFFF',  // White font for edges
+              size: 12
+            }
           });
         }
       }
@@ -141,19 +162,26 @@
         fixed: {
           x: true,
           y: true
+        },
+        shadow: {
+          enabled: true,
+          color: '#000000',
+          x: 0,
+          y: 0,
+          blur: 20
         }
       },
       edges: {
         color: {
-          color: '#ffffff',
-          highlight: '#81C784'
+          color: '#FFD700', // Golden edges
+          highlight: '#FF6347' // Tomato red when highlighted
         },
         smooth: {
           type: 'continuous',
           roundness: 0.5
         },
         font: {
-          color: '#ffffff',
+          color: '#FFFFFF', // White edge label font
           size: 12,
           align: 'top'
         }
