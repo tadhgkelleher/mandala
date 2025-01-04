@@ -150,7 +150,7 @@
 
     const options = {
       physics: {
-        enabled: false,
+        enabled: false, // Initially disable physics
       },
       nodes: {
         color: {
@@ -215,9 +215,9 @@
               updateInterval: 25
             },
             barnesHut: {
-              gravitationalConstant: -50000,
+              gravitationalConstant: -80000, // Increased gravity to push nodes apart
               centralGravity: 0.05, // Decrease gravity to allow nodes to spread
-              springLength: 200, // Increased spring length for explosion
+              springLength: 300, // Increased spring length for explosion
               springConstant: 0.0025, // Adjust spring constant for more "explosion"
               damping: 0.09,
               avoidOverlap: 1
