@@ -195,8 +195,10 @@
 
             // Toggle Physics
             document.getElementById("toggle-physics").addEventListener("click", () => {
-                options.physics.enabled = !options.physics.enabled;
-                network.setOptions(options);
+                const currentPhysics = network.getOptions().physics.enabled;
+                network.setOptions({
+                    physics: { enabled: !currentPhysics }
+                });
             });
 
             // Layout Buttons
