@@ -22,20 +22,37 @@
       width: 100%;
     }
 
-    .toggle-physics-button {
-      background-color: #4a90e2;
-      color: white;
-      padding: 8px 16px;
-      border: none;
-      border-radius: 4px;
-      margin-top: 10px;
-      cursor: pointer;
-      font-size: 16px;
-    }
+.toggle-physics-button {
+  background-color: #4a90e2;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 4px;
+  font-size: 18px;
+  margin: 0 auto; /* Center horizontally */
+  cursor: pointer;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  position: sticky; /* Sticks within the viewport */
+  top: 10px; /* 10px from the top of the viewport */
+  z-index: 9999; /* Ensure it's above other elements */
+}
 
-    .toggle-physics-button:hover {
-      background-color: #357abd;
-    }
+/* Mobile-specific adjustments */
+@media (max-width: 768px) {
+  .toggle-physics-button {
+    font-size: 16px;
+    padding: 10px 20px;
+    width: 90%;
+    max-width: 300px;
+    position: fixed; /* Fix the button in place */
+    bottom: 10px; /* Move it to the bottom for better mobile experience */
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+
   </style>
 </head>
 <body>
@@ -90,7 +107,7 @@
       const conditionNode = {
         id: condition.id,
         label: condition.title,
-        title: <h3>${condition.title}</h3><ul>${condition.tags.map(tag => <li>${tag}</li>).join('')}</ul>,
+        title: `<h3>${condition.title}</h3><ul>${condition.tags.map(tag => `<li>${tag}</li>`).join('')}</ul>`,
         group: "condition",
         size: condition.tags.length * 3
       };
