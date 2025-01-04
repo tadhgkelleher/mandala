@@ -92,7 +92,7 @@
         label: condition.title,
         title: `<h3>${condition.title}</h3><ul>${condition.tags.map(tag => `<li>${tag}</li>`).join('')}</ul>`,
         group: "condition",
-        size: condition.tags.length * 3  // Size based on number of tags (connections)
+        size: condition.tags.length * 3
       };
       nodes.add(conditionNode);
 
@@ -103,16 +103,14 @@
         }
         edges.add({ from: condition.id, to: tag });
 
-        // Track connections to adjust size later
         nodeConnections[tag] = (nodeConnections[tag] || 0) + 1;
         nodeConnections[condition.id] = (nodeConnections[condition.id] || 0) + 1;
       });
     });
 
-    // Adjust the node size based on the number of connections (tags)
     nodes.forEach(node => {
       const connectionCount = nodeConnections[node.id] || 0;
-      node.size = connectionCount * 3;  // Adjust multiplier as necessary
+      node.size = connectionCount * 3;
       nodes.update(node);
     });
 
@@ -124,7 +122,7 @@
         font: { size: 16 },
       },
       physics: {
-        enabled: false,  // Initially physics is off
+        enabled: false,
         solver: 'forceAtlas2Based',
       },
       interaction: {
@@ -134,22 +132,33 @@
         randomSeed: 2,
         hierarchical: false,
         improvedLayout: false,
-        circular: true,  // Start with circular layout
+        circular: true,
       },
     };
 
     const network = new vis.Network(container, data, options);
 
-    // Button to enable physics and change layout
-    const physicsButton = document.querySelector(".toggle-physics-button");
-    physicsButton.addEventListener("click", () => {
-      network.setOptions({
-        physics: { enabled: true },
-        layout: { improvedLayout: true },
-      });
-      physicsButton.disabled = true;  // Disable button after enabling physics
+    const toggleButton = document.querySelector(".toggle-physics-button");
+    let physicsEnabled = false;
+    let currentLayout = "circular";
+
+    toggleButton.addEventListener("click", function () {
+      physicsEnabled = !physicsEnabled;
+      options.physics.enabled = physicsEnabled;
+      if (currentLayout === "circular") {
+        options.layout.randomSeed = 2;
+        options.layout.circular = false;
+        currentLayout = "random";
+      } else {
+        options.layout.randomSeed = 2;
+        options.layout.circular = true;
+        currentLayout = "circular";
+      }
+      network.setOptions(options);
+      toggleButton.textContent = physicsEnabled ? "Disable Physics" : "Enable Physics";
     });
   });
 </script>
+
 </body>
 </html>
