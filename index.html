@@ -117,14 +117,9 @@
           edges.push({
             from: music.id,
             to: musicGenresAndArtists[i].id,
-            label: `Common tags: ${commonTags.join(", ")}`,
             width: commonTags.length * 1.5,
             length: 400,
             color: '#FFD700',  // Golden edges for common tags
-            font: {
-              color: '#FFFFFF',  // White font for edges
-              size: 12
-            }
           });
           // Increment the connection count for each node
           nodes[music.id - 1].connections++;
@@ -192,11 +187,6 @@
         smooth: {
           type: 'continuous',
           roundness: 0.5
-        },
-        font: {
-          color: '#FFFFFF', // White edge label font
-          size: 12,
-          align: 'top'
         }
       },
       interaction: {
