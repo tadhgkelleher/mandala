@@ -93,13 +93,14 @@
         label: condition.title,
         title: `<h3>${condition.title}</h3><ul>${condition.tags.map(tag => `<li>${tag}</li>`).join('')}</ul>`,
         group: "condition",
+        visible: false,  // Initially hide labels
       };
       nodes.add(conditionNode);
 
       condition.tags.forEach(tag => {
         const tagNode = nodes.get(tag);
         if (!tagNode) {
-          nodes.add({ id: tag, label: tag, group: "tag" });
+          nodes.add({ id: tag, label: tag, group: "tag", visible: false });  // Initially hide tag labels
         }
         edges.add({ from: condition.id, to: tag });
 
@@ -119,10 +120,10 @@
     const container = document.getElementById("related-posts-graph");
     const data = { nodes: nodes, edges: edges };
     const options = {
-    nodes: {
-    shape: 'dot',
-    font: { size: 24, color: 'white' },  // Set font color to white
-  },
+      nodes: {
+        shape: 'dot',
+        font: { size: 24, color: 'white' },  // Set font color to white
+      },
       physics: {
         enabled: false,  // Initially physics is off
         solver: 'forceAtlas2Based',
@@ -130,26 +131,28 @@
       interaction: {
         hover: true,
       },
-      layout: {
-        randomSeed: 2,
-        hierarchical: false,
-        improvedLayout: false,
-        circular: true,  // Start with circular layout
+      manipulation: {
+        enabled: false,
       },
     };
 
     const network = new vis.Network(container, data, options);
 
-    // Button to enable physics and change layout
-    const physicsButton = document.querySelector(".toggle-physics-button");
-    physicsButton.addEventListener("click", () => {
-      network.setOptions({
-        physics: { enabled: true },
-        layout: { improvedLayout: true },
+    const toggleButton = document.querySelector('.toggle-physics-button');
+    toggleButton.addEventListener('click', function () {
+      const physicsEnabled = options.physics.enabled;
+      options.physics.enabled = !physicsEnabled;
+      network.setOptions(options);
+
+      // Toggle label visibility when physics is enabled
+      const shouldShowLabels = !physicsEnabled;
+      nodes.forEach(node => {
+        node.visible = shouldShowLabels;
+        nodes.update(node);
       });
-      physicsButton.disabled = true;  // Disable button after enabling physics
     });
   });
 </script>
+
 </body>
 </html>
