@@ -49,361 +49,177 @@
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     const treatmentsAndConditions = [
-      { id: 1, treatment_or_condition: "Cancer", tags: [
-        { tag: "Chemotherapy", id: 1 },
-        { tag: "Surgery", id: 2 },
-        { tag: "Cancer Treatment", id: 3 }
-      ]},
-      { id: 2, treatment_or_condition: "Smoking", tags: [
-        { tag: "Cancer", id: 1 },
-        { tag: "Environmental Exposure", id: 4 }
-      ]},
-      { id: 3, treatment_or_condition: "Genetics", tags: [
-        { tag: "Cancer", id: 1 },
-        { tag: "Cancer Treatment", id: 3 }
-      ]},
-      { id: 4, treatment_or_condition: "Diabetes", tags: [
-        { tag: "Insulin", id: 5 },
-        { tag: "Exercise", id: 6 },
-        { tag: "Diabetes Management", id: 7 }
-      ]},
-      { id: 5, treatment_or_condition: "Obesity", tags: [
-        { tag: "Diabetes", id: 4 },
-        { tag: "Poor Diet", id: 8 }
-      ]},
-      { id: 6, treatment_or_condition: "Cardiovascular Disease", tags: [
-        { tag: "Diabetes", id: 4 },
-        { tag: "Exercise", id: 6 },
-        { tag: "Heart Disease", id: 9 }
-      ]},
-      { id: 7, treatment_or_condition: "Hypertension", tags: [
-        { tag: "Cardiovascular Disease", id: 10 },
-        { tag: "Heart Disease", id: 9 }
-      ]},
-      { id: 8, treatment_or_condition: "Arthritis", tags: [
-        { tag: "Pain Management", id: 11 },
-        { tag: "Exercise", id: 6 }
-      ]},
-      { id: 9, treatment_or_condition: "Asthma", tags: [
-        { tag: "Respiratory Issues", id: 12 },
-        { tag: "Exercise", id: 6 }
-      ]},
-      { id: 10, treatment_or_condition: "Depression", tags: [
-        { tag: "Mental Health", id: 13 },
-        { tag: "Psychotherapy", id: 14 }
-      ]},
-      { id: 11, treatment_or_condition: "Anxiety", tags: [
-        { tag: "Mental Health", id: 13 },
-        { tag: "Psychotherapy", id: 14 }
-      ]},
-      { id: 12, treatment_or_condition: "Osteoporosis", tags: [
-        { tag: "Bone Health", id: 16 },
-        { tag: "Exercise", id: 6 }
-      ]},
-      { id: 13, treatment_or_condition: "Parkinson's Disease", tags: [
-        { tag: "Neurological Disorder", id: 17 },
-        { tag: "Exercise", id: 6 }
-      ]},
-      { id: 14, treatment_or_condition: "Multiple Sclerosis", tags: [
-        { tag: "Neurological Disorder", id: 17 },
-        { tag: "Exercise", id: 6 }
-      ]},
-      { id: 15, treatment_or_condition: "Alzheimer's Disease", tags: [
-        { tag: "Neurological Disorder", id: 17 },
-        { tag: "Memory Loss", id: 18 }
-      ]},
-      { id: 16, treatment_or_condition: "Chronic Pain", tags: [
-        { tag: "Pain Management", id: 11 },
-        { tag: "Mental Health", id: 13 }
-      ]},
-      { id: 17, treatment_or_condition: "Sleep Disorders", tags: [
-        { tag: "Mental Health", id: 13 },
-        { tag: "Neurological Disorder", id: 17 }
-      ]},
-      { id: 18, treatment_or_condition: "Migraine", tags: [
-        { tag: "Neurological Disorder", id: 17 },
-        { tag: "Pain Management", id: 11 }
-      ]},
-      { id: 19, treatment_or_condition: "Fibromyalgia", tags: [
-        { tag: "Chronic Pain", id: 16 },
-        { tag: "Pain Management", id: 11 }
-      ]},
-      { id: 20, treatment_or_condition: "Rheumatoid Arthritis", tags: [
-        { tag: "Pain Management", id: 11 },
-        { tag: "Exercise", id: 6 }
-      ]},
-      { id: 21, treatment_or_condition: "Asthma", tags: [
-        { tag: "Respiratory Issues", id: 12 },
-        { tag: "Medication", id: 19 }
-      ]},
-      { id: 22, treatment_or_condition: "Stroke", tags: [
-        { tag: "Neurological Disorder", id: 17 },
-        { tag: "Heart Disease", id: 9 }
-      ]},
-      { id: 23, treatment_or_condition: "Cancer Treatment", tags: [
-        { tag: "Chemotherapy", id: 1 },
-        { tag: "Surgery", id: 2 },
-        { tag: "Radiation", id: 20 }
-      ]},
-      { id: 24, treatment_or_condition: "HIV/AIDS", tags: [
-        { tag: "Cancer", id: 1 },
-        { tag: "Infection", id: 21 }
-      ]},
-      { id: 25, treatment_or_condition: "Infection", tags: [
-        { tag: "Antibiotics", id: 22 },
-        { tag: "HIV/AIDS", id: 24 }
-      ]},
-      { id: 26, treatment_or_condition: "Obesity", tags: [
-        { tag: "Nutrition", id: 15 },
-        { tag: "Diabetes", id: 4 }
-      ]},
-      { id: 27, treatment_or_condition: "Chronic Fatigue Syndrome", tags: [
-        { tag: "Fatigue", id: 23 },
-        { tag: "Exercise", id: 6 }
-      ]},
-      { id: 28, treatment_or_condition: "Menopause", tags: [
-        { tag: "Hormonal Changes", id: 24 },
-        { tag: "Pain Management", id: 11 }
-      ]},
-      { id: 29, treatment_or_condition: "Polycystic Ovary Syndrome", tags: [
-        { tag: "Hormonal Changes", id: 24 },
-        { tag: "Exercise", id: 6 }
-      ]},
-      { id: 30, treatment_or_condition: "Thyroid Disorders", tags: [
-        { tag: "Hormonal Changes", id: 24 },
-        { tag: "Medication", id: 19 }
-      ]},
-      { id: 31, treatment_or_condition: "Lung Cancer", tags: [
-        { tag: "Cancer", id: 1 },
-        { tag: "Chemotherapy", id: 1 }
-      ]},
-      { id: 32, treatment_or_condition: "Breast Cancer", tags: [
-        { tag: "Cancer", id: 1 },
-        { tag: "Radiation", id: 20 }
-      ]},
-      { id: 33, treatment_or_condition: "Prostate Cancer", tags: [
-        { tag: "Cancer", id: 1 },
-        { tag: "Surgery", id: 2 }
-      ]},
-      { id: 34, treatment_or_condition: "Leukemia", tags: [
-        { tag: "Cancer", id: 1 },
-        { tag: "Chemotherapy", id: 1 }
-      ]},
-      { id: 35, treatment_or_condition: "Liver Disease", tags: [
-        { tag: "Cancer", id: 1 },
-        { tag: "Infection", id: 21 }
-      ]},
-      { id: 36, treatment_or_condition: "Kidney Disease", tags: [
-        { tag: "Cancer", id: 1 },
-        { tag: "Infection", id: 21 }
-      ]},
-      { id: 37, treatment_or_condition: "Crohn's Disease", tags: [
-        { tag: "Chronic Disease", id: 25 },
-        { tag: "Digestive Issues", id: 26 }
-      ]},
-      { id: 38, treatment_or_condition: "Celiac Disease", tags: [
-        { tag: "Chronic Disease", id: 25 },
-        { tag: "Gluten", id: 27 }
-      ]},
-      { id: 39, treatment_or_condition: "Ulcerative Colitis", tags: [
-        { tag: "Chronic Disease", id: 25 },
-        { tag: "Digestive Issues", id: 26 }
-      ]},
-      { id: 40, treatment_or_condition: "Pneumonia", tags: [
-        { tag: "Infection", id: 21 },
-        { tag: "Respiratory Issues", id: 12 }
-      ]},
-      { id: 41, treatment_or_condition: "Tuberculosis", tags: [
-        { tag: "Infection", id: 21 },
-        { tag: "Respiratory Issues", id: 12 }
-      ]},
-      { id: 42, treatment_or_condition: "Eczema", tags: [
-        { tag: "Skin Condition", id: 28 },
-        { tag: "Allergy", id: 29 }
-      ]},
-      { id: 43, treatment_or_condition: "Psoriasis", tags: [
-        { tag: "Skin Condition", id: 28 },
-        { tag: "Autoimmune Disorder", id: 30 }
-      ]},
-      { id: 44, treatment_or_condition: "Acne", tags: [
-        { tag: "Skin Condition", id: 28 },
-        { tag: "Hormonal Changes", id: 24 }
-      ]},
-      { id: 45, treatment_or_condition: "Allergic Rhinitis", tags: [
-        { tag: "Allergy", id: 29 },
-        { tag: "Respiratory Issues", id: 12 }
-      ]},
-      { id: 46, treatment_or_condition: "Asthma", tags: [
-        { tag: "Respiratory Issues", id: 12 },
-        { tag: "Medication", id: 19 }
-      ]},
-      { id: 47, treatment_or_condition: "Sinusitis", tags: [
-        { tag: "Respiratory Issues", id: 12 },
-        { tag: "Sinus Infections", id: 31 }
-      ]},
-      { id: 48, treatment_or_condition: "Cystic Fibrosis", tags: [
-        { tag: "Respiratory Issues", id: 12 },
-        { tag: "Genetic Disorder", id: 32 }
-      ]},
-      { id: 49, treatment_or_condition: "Chronic Sinusitis", tags: [
-        { tag: "Sinus Infections", id: 31 },
-        { tag: "Respiratory Issues", id: 12 }
-      ]},
-      { id: 50, treatment_or_condition: "Gallbladder Disease", tags: [
-        { tag: "Digestive Issues", id: 26 },
-        { tag: "Liver Disease", id: 35 }
-      ]},
-      { id: 51, treatment_or_condition: "Appendicitis", tags: [
-        { tag: "Digestive Issues", id: 26 },
-        { tag: "Surgery", id: 2 }
-      ]},
-      { id: 52, treatment_or_condition: "Gastroesophageal Reflux Disease", tags: [
-        { tag: "Digestive Issues", id: 26 },
-        { tag: "Heartburn", id: 33 }
-      ]},
-      { id: 53, treatment_or_condition: "Irritable Bowel Syndrome", tags: [
-        { tag: "Digestive Issues", id: 26 },
-        { tag: "Chronic Disease", id: 25 }
-      ]},
-      { id: 54, treatment_or_condition: "Lactose Intolerance", tags: [
-        { tag: "Digestive Issues", id: 26 },
-        { tag: "Diet", id: 34 }
-      ]},
-      { id: 55, treatment_or_condition: "Food Allergies", tags: [
-        { tag: "Digestive Issues", id: 26 },
-        { tag: "Allergy", id: 29 }
-      ]},
-      { id: 56, treatment_or_condition: "Gluten Sensitivity", tags: [
-        { tag: "Digestive Issues", id: 26 },
-        { tag: "Diet", id: 34 }
-      ]},
-      { id: 57, treatment_or_condition: "Celiac Disease", tags: [
-        { tag: "Digestive Issues", id: 26 },
-        { tag: "Allergy", id: 29 }
-      ]},
-      { id: 58, treatment_or_condition: "Chronic Obstructive Pulmonary Disease", tags: [
-        { tag: "Respiratory Issues", id: 12 },
-        { tag: "Lung Disease", id: 36 }
-      ]},
-      { id: 59, treatment_or_condition: "Sleep Apnea", tags: [
-        { tag: "Sleep Disorders", id: 17 },
-        { tag: "Respiratory Issues", id: 12 }
-      ]},
-      { id: 60, treatment_or_condition: "Bronchitis", tags: [
-        { tag: "Respiratory Issues", id: 12 },
-        { tag: "Cough", id: 37 }
-      ]},
-      { id: 61, treatment_or_condition: "Pneumonia", tags: [
-        { tag: "Respiratory Issues", id: 12 },
-        { tag: "Infection", id: 21 }
-      ]},
-      { id: 62, treatment_or_condition: "Tuberculosis", tags: [
-        { tag: "Respiratory Issues", id: 12 },
-        { tag: "Infection", id: 21 }
-      ]},
-      { id: 63, treatment_or_condition: "Cold", tags: [
-        { tag: "Respiratory Issues", id: 12 },
-        { tag: "Infection", id: 21 }
-      ]},
-      { id: 64, treatment_or_condition: "Lung Cancer", tags: [
-        { tag: "Cancer", id: 1 },
-        { tag: "Respiratory Issues", id: 12 }
-      ]},
-      { id: 65, treatment_or_condition: "Pneumonitis", tags: [
-        { tag: "Respiratory Issues", id: 12 },
-        { tag: "Inflammation", id: 38 }
-      ]},
-      { id: 66, treatment_or_condition: "Heart Failure", tags: [
-        { tag: "Heart Disease", id: 9 },
-        { tag: "Cardiovascular Disease", id: 10 }
-      ]},
-      { id: 67, treatment_or_condition: "Coronary Artery Disease", tags: [
-        { tag: "Heart Disease", id: 9 },
-        { tag: "Cardiovascular Disease", id: 10 }
-      ]},
-      { id: 68, treatment_or_condition: "Atrial Fibrillation", tags: [
-        { tag: "Heart Disease", id: 9 },
-        { tag: "Cardiovascular Disease", id: 10 }
-      ]},
-      { id: 69, treatment_or_condition: "Chronic Kidney Disease", tags: [
-        { tag: "Kidney Disease", id: 36 },
-        { tag: "Infection", id: 21 }
-      ]},
-      { id: 70, treatment_or_condition: "Kidney Stones", tags: [
-        { tag: "Kidney Disease", id: 36 },
-        { tag: "Pain Management", id: 11 }
-      ]}
+      { id: 1, title: "Cancer", tags: ["Cancer", "Chemotherapy", "Surgery", "Cancer Treatment", "Smoking", "Genetics", "Environmental Exposure", "Radiation"] },
+      { id: 2, title: "Diabetes", tags: ["Diabetes", "Insulin", "Exercise", "Diabetes Management", "Obesity", "Poor Diet", "Lack of Physical Activity", "Genetics"] },
+      { id: 3, title: "Heart Disease", tags: ["Heart", "Cholesterol", "Surgery", "Heart Disease Treatment", "High Blood Pressure", "Unhealthy Diet", "Lack of Exercise", "Smoking", "Obesity"] },
+      { id: 4, title: "Asthma", tags: ["Asthma", "Inhalers", "Exercise", "Asthma Management", "Allergens", "Air Pollution", "Respiratory Infections", "Genetics"] },
+      { id: 5, title: "Flu", tags: ["Flu", "Antiviral", "Rest", "Flu Treatment", "Influenza Virus", "Weakened Immune System", "Close Contact"] },
+      { id: 6, title: "COVID-19", tags: ["COVID-19", "Vaccine", "Prevention", "COVID-19 Vaccination", "SARS-CoV-2 Virus", "Airborne Transmission", "Close Contact", "Weak Immune System"] },
+      { id: 7, title: "Chronic Pain", tags: ["Chronic Pain", "Medication", "Exercise", "Chronic Pain Relief", "Injury", "Nerve Damage", "Arthritis", "Fibromyalgia", "Inflammation"] },
+      { id: 8, title: "Mental Health", tags: ["Mental Health", "Therapy", "Support", "Mental Health Counseling", "Trauma", "Stress", "Genetics", "Chemical Imbalance", "Life Events"] },
+      { id: 9, title: "Alzheimer's", tags: ["Alzheimer's", "Memory", "Care", "Alzheimer's Disease", "Age", "Genetics", "Brain Plaques", "Environmental Factors", "Head Injuries"] },
+      { id: 10, title: "Obesity", tags: ["Obesity", "Diet", "Exercise", "Obesity Treatment", "Poor Diet", "Lack of Physical Activity", "Genetics", "Hormonal Imbalance", "Metabolic Disorders"] },
+      { id: 11, title: "Stroke", tags: ["Stroke", "Rehabilitation", "Physiotherapy", "Stroke Rehabilitation", "High Blood Pressure", "Atherosclerosis", "Blood Clots", "Smoking", "Obesity"] },
+      { id: 12, title: "Kidney", tags: ["Kidney", "Dialysis", "Transplant", "Kidney Disease Management", "High Blood Pressure", "Diabetes", "Infections", "Genetics"] },
+      { id: 13, title: "Sleep", tags: ["Sleep", "Insomnia", "CPAP", "Sleep Disorder Treatment", "Stress", "Anxiety", "Depression", "Poor Sleep Hygiene", "Medical Conditions"] },
+      { id: 14, title: "Lung", tags: ["Lung", "COPD", "Oxygen", "Lung Disease Treatment", "Smoking", "Air Pollution", "Genetics", "Infections"] },
+      { id: 15, title: "Mental Health", tags: ["Mental Health", "Therapy", "Support", "Mental Health Therapy", "Trauma", "Genetics", "Chemical Imbalance", "Stress"] },
+      { id: 16, title: "Liver", tags: ["Liver", "Hepatitis", "Transplant", "Liver Disease Management", "Alcohol Abuse", "Hepatitis B and C", "Obesity", "Genetics"] },
+      { id: 17, title: "Cancer", tags: ["Cancer", "Rehabilitation", "Exercise", "Cancer Rehabilitation", "Smoking", "Genetics", "Radiation Exposure"] },
+      { id: 18, title: "Weight Loss", tags: ["Obesity", "Surgery", "Diet", "Weight Loss Surgery", "Poor Diet", "Lack of Exercise", "Genetics", "Metabolic Disorders"] },
+      { id: 19, title: "Parkinson's", tags: ["Parkinson's", "Exercise", "Medication", "Parkinson's Disease Management", "Genetics", "Age", "Environmental Toxins"] },
+      { id: 20, title: "Fatigue", tags: ["Fatigue", "Exercise", "Support", "Chronic Fatigue Syndrome", "Sleep Disorders", "Stress", "Depression", "Poor Diet"] },
+      { id: 21, title: "Depression Treatment", tags: ["Depression", "Therapy", "Medication"] },
+      { id: 22, title: "HIV/AIDS Treatment", tags: ["HIV", "AIDS", "Medication"] },
+      { id: 23, title: "Unrelated Data 1", tags: ["Unrelated", "Data", "Test"] },
+      { id: 24, title: "Unrelated Data 2", tags: ["Unrelated", "Data", "Test"] },
+      { id: 25, title: "Unrelated Data 3", tags: ["Test", "Random", "Info"] }
     ];
 
-    var nodes = new vis.DataSet();
-    var edges = new vis.DataSet();
-
-    treatmentsAndConditions.forEach(item => {
-      // Add node for treatment or condition
-      nodes.add({ id: item.id, label: item.treatment_or_condition, shape: 'box', color: '#f39c12' });
-
-      // Add edges for tags
-      item.tags.forEach(tag => {
-        nodes.add({ id: tag.id, label: tag.tag, shape: 'ellipse', color: '#3498db' });
-        edges.add({ from: item.id, to: tag.id });
+    function calculateCircularPositions(nodes, radius, centerX, centerY) {
+      const angleStep = (2 * Math.PI) / nodes.length;
+      return nodes.map((node, index) => {
+        const angle = angleStep * index;
+        return {
+          id: node.id,
+          label: node.label,
+          title: node.title,
+          x: centerX + radius * Math.cos(angle),
+          y: centerY + radius * Math.sin(angle)
+        };
       });
+    }
+
+    let nodes = treatmentsAndConditions.map(treatment => ({
+      id: treatment.id,
+      label: treatment.title,
+      title: `${treatment.title}\nTags: ${treatment.tags.join(", ")}`
+    }));
+
+    let edges = [];
+    treatmentsAndConditions.forEach((treatment, index) => {
+      for (let i = index + 1; i < treatmentsAndConditions.length; i++) {
+        const commonTags = treatment.tags.filter(tag =>
+          treatmentsAndConditions[i].tags.includes(tag)
+        );
+        if (commonTags.length > 0) {
+          edges.push({
+            from: treatment.id,
+            to: treatmentsAndConditions[i].id,
+            title: `Common tags: ${commonTags.join(", ")}`,
+            width: commonTags.length * 1.5,
+            length: 400
+          });
+        }
+      }
     });
 
-    var container = document.getElementById('related-posts-graph');
-    var data = {
-      nodes: nodes,
-      edges: edges
+    const centerX = 0;
+    const centerY = 0;
+    const radius = 800;
+    nodes = calculateCircularPositions(nodes, radius, centerX, centerY);
+
+    const container = document.getElementById("related-posts-graph");
+    const data = {
+      nodes: new vis.DataSet(nodes),
+      edges: new vis.DataSet(edges)
     };
 
-   var options = {
-  nodes: {
-    font: { size: 14 },
-    borderWidth: 2
-  },
-  edges: {
-    width: 2,
-    arrows: 'to'
-  },
-  physics: {
-    enabled: true,
-    solver: 'forceAtlas2Based',
-    forceAtlas2Based: {
-      gravitationalConstant: -50,
-      centralGravity: 0.01,
-      springLength: 200,
-      springConstant: 0.08,
-      damping: 0.4
-    }
-  },
-  interaction: {
-    dragNodes: true,  // Allow nodes to be dragged
-    zoomView: true,   // Enable zoom with mouse wheel and touch gestures
-    mouseWheel: true, // Allow zoom with mouse wheel
-    navigationButtons: true, // Optional: Adds navigation buttons to zoom in/out
-    keyboard: true,   // Allow zooming using keyboard keys
-  }
-};
-
-
-    var network = new vis.Network(container, data, options);
-
-    // Toggle physics feature
-    var toggleButton = document.querySelector('.toggle-physics-button');
-    toggleButton.addEventListener('click', function () {
-      if (network.physicsEnabled) {
-        toggleButton.textContent = "Enable Physics";
-        network.setOptions({
-          physics: {
-            enabled: false
+    const options = {
+      physics: {
+        enabled: false  // Start with physics disabled
+      },
+      nodes: {
+        color: {
+          background: '#4CAF50',
+          border: '#2E7D32',
+          highlight: {
+            background: '#81C784',
+            border: '#4CAF50'
           }
-        });
-      } else {
+        },
+        font: {
+          color: '#ffffff',
+          size: 14
+        },
+        borderWidth: 2,
+        size: 25,
+        shape: 'dot',
+        fixed: {
+          x: true,
+          y: true
+        }
+      },
+      edges: {
+        color: {
+          color: '#ffffff',
+          highlight: '#81C784'
+        },
+        smooth: {
+          type: 'continuous',
+          roundness: 0.5
+        }
+      },
+      interaction: {
+        hover: true,  // Keep hover for node interaction
+        tooltipDelay: 200, // Delay for tooltips (optional)
+        navigationButtons: false,  // Remove navigation buttons
+        keyboard: false,  // Disable keyboard navigation
+        zoomView: false, // Disable zooming
+        dragView: false // Disable dragging the view
+      }
+    };
+
+    const network = new vis.Network(container, data, options);
+    let isPhysicsEnabled = false;
+    const toggleButton = document.querySelector(".toggle-physics-button");
+
+    toggleButton.addEventListener("click", function() {
+      isPhysicsEnabled = !isPhysicsEnabled;
+      if (isPhysicsEnabled) {
         toggleButton.textContent = "Disable Physics";
         network.setOptions({
           physics: {
-            enabled: true
+            enabled: true,
+            stabilization: {
+              enabled: true,
+              iterations: 1000,
+              updateInterval: 25
+            },
+            barnesHut: {
+              gravitationalConstant: -50000,
+              centralGravity: 0.03,
+              springLength: 400,
+              springConstant: 0.005,
+              damping: 0.09,
+              avoidOverlap: 1
+            },
+            repulsion: {
+              nodeDistance: 400
+            }
+          },
+          nodes: {
+            fixed: {
+              x: false,
+              y: false
+            }
           }
         });
+      } else {
+        toggleButton.textContent = "Enable Physics";
+        network.setOptions({ 
+          physics: { 
+            enabled: false 
+          },
+          nodes: {
+            fixed: {
+              x: true,
+              y: true
+            }
+          }
+        });
+        const updatedNodes = calculateCircularPositions(nodes, radius, centerX, centerY);
+        data.nodes.update(updatedNodes);
       }
     });
   });
