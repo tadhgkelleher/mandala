@@ -294,6 +294,13 @@
             };
             const network = new vis.Network(container, data, options);
 
+            // Toggle Physics
+            document.getElementById("toggle-physics").addEventListener("click", function() {
+                const currentPhysicsState = options.physics.enabled;
+                options.physics.enabled = !currentPhysicsState;
+                network.setOptions(options);
+            });
+
             // Update stats
             document.getElementById("node-count").textContent = nodes.length;
             document.getElementById("edge-count").textContent = edges.length;
