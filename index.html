@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cosmic Music Genre and Artist Connections</title>
+  <title>Treatment and Condition Connections</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css" rel="stylesheet">
   <style>
     #related-posts-graph-container {
       position: relative;
-      background-color: #111111; /* Cosmic black background */
+      background-color: black;
       margin: 0 auto;
       width: 100%;
       padding: 10px;
@@ -48,25 +48,32 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-    const musicGenresAndArtists = [
-      { id: 1, title: "Alice Springs", tags: ["Rock", "Blues", "Producer"], genre: "Rock" },
-      { id: 2, title: "Catch the Monkey", tags: ["Indie", "Pop", "Drummer"], genre: "Pop" },
-      { id: 3, title: "Glee Club", tags: ["Pop", "Indie", "Arranger"], genre: "Pop" },
-      { id: 4, title: "Hank Half Head & the Rambling Turkeys", tags: ["Country", "Folk", "Manager"], genre: "Country" },
-      { id: 5, title: "Hank Halfhead And The Rambling Turkeys", tags: ["Country", "Folk", "Manager"], genre: "Country" },
-      { id: 6, title: "Interference", tags: ["Alternative", "Rock", "Counselling"], genre: "Alternative" },
-      { id: 7, title: "Justin Healy", tags: ["Jazz", "Folk", "Producer", "Drummer"], genre: "Jazz" },
-      { id: 8, title: "Lir", tags: ["Rock", "Indie", "Producer", "Manager"], genre: "Rock" },
-      { id: 9, title: "Mik Pyro and the Dublin Blues Cartel", tags: ["Blues", "Rock", "Arranger"], genre: "Blues" },
-      { id: 10, title: "Satanta", tags: ["Indie", "Pop", "Manager"], genre: "Pop" },
-      { id: 11, title: "Sugar Honey", tags: ["Funk", "Soul", "Producer"], genre: "Funk" },
-      { id: 12, title: "The 4 Of Us", tags: ["Rock", "Pop", "Drummer"], genre: "Rock" },
-      { id: 13, title: "The Bogey Boys", tags: ["Punk", "Rock", "Manager"], genre: "Punk" },
-      { id: 14, title: "The Forget Me Nots", tags: ["Indie", "Pop", "Counselling"], genre: "Indie" },
-      { id: 15, title: "The Glee Club", tags: ["Pop", "Indie", "Producer"], genre: "Pop" },
-      { id: 16, title: "The Golden Horde", tags: ["Rock", "Alternative", "Arranger"], genre: "Rock" },
-      { id: 17, title: "the late late show", tags: ["Jazz", "Blues", "Manager"], genre: "Blues" },
-      { id: 18, title: "The Racketeers", tags: ["Blues", "Rock", "Producer"], genre: "Blues" }
+    const treatmentsAndConditions = [
+      { id: 1, title: "Cancer Treatment", tags: ["Cancer", "Chemotherapy", "Surgery"] },
+      { id: 2, title: "Diabetes Management", tags: ["Diabetes", "Insulin", "Exercise"] },
+      { id: 3, title: "Heart Disease Treatment", tags: ["Heart", "Cholesterol", "Surgery"] },
+      { id: 4, title: "Asthma Management", tags: ["Asthma", "Inhalers", "Exercise"] },
+      { id: 5, title: "Flu Treatment", tags: ["Flu", "Antiviral", "Rest"] },
+      { id: 6, title: "COVID-19 Vaccination", tags: ["COVID-19", "Vaccine", "Prevention"] },
+      { id: 7, title: "Chronic Pain Relief", tags: ["Chronic Pain", "Medication", "Exercise"] },
+      { id: 8, title: "Mental Health Counseling", tags: ["Mental Health", "Therapy", "Support"] },
+      { id: 9, title: "Alzheimer's Disease", tags: ["Alzheimer's", "Memory", "Care"] },
+      { id: 10, title: "Obesity Treatment", tags: ["Obesity", "Diet", "Exercise"] },
+      { id: 11, title: "Stroke Rehabilitation", tags: ["Stroke", "Rehabilitation", "Physiotherapy"] },
+      { id: 12, title: "Kidney Disease Management", tags: ["Kidney", "Dialysis", "Transplant"] },
+      { id: 13, title: "Sleep Disorder Treatment", tags: ["Sleep", "Insomnia", "CPAP"] },
+      { id: 14, title: "Lung Disease Treatment", tags: ["Lung", "COPD", "Oxygen"] },
+      { id: 15, title: "Mental Health Therapy", tags: ["Mental Health", "Therapy", "Support"] },
+      { id: 16, title: "Liver Disease Management", tags: ["Liver", "Hepatitis", "Transplant"] },
+      { id: 17, title: "Cancer Rehabilitation", tags: ["Cancer", "Rehabilitation", "Exercise"] },
+      { id: 18, title: "Weight Loss Surgery", tags: ["Obesity", "Surgery", "Diet"] },
+      { id: 19, title: "Parkinson's Disease Management", tags: ["Parkinson's", "Exercise", "Medication"] },
+      { id: 20, title: "Chronic Fatigue Syndrome", tags: ["Fatigue", "Exercise", "Support"] },
+      { id: 21, title: "Depression Treatment", tags: ["Depression", "Therapy", "Medication"] },
+      { id: 22, title: "HIV/AIDS Treatment", tags: ["HIV", "AIDS", "Medication"] },
+      { id: 23, title: "Unrelated Data 1", tags: ["Unrelated", "Data", "Test"] },
+      { id: 24, title: "Unrelated Data 2", tags: ["Unrelated", "Data", "Test"] },
+      { id: 25, title: "Unrelated Data 3", tags: ["Test", "Random", "Info"] }
     ];
 
     function calculateCircularPositions(nodes, radius, centerX, centerY) {
@@ -83,63 +90,33 @@
       });
     }
 
-    let nodes = musicGenresAndArtists.map(music => ({
-      id: music.id,
-      label: music.title,
-      title: `${music.title}\nGenre: ${music.genre}\nTags: ${music.tags.join(", ")}`,
-      color: generateColorForNode(music), // Apply a color based on the genre
-      connections: 0, // Placeholder for counting connections
-      size: 25 // Default node size
+    let nodes = treatmentsAndConditions.map(treatment => ({
+      id: treatment.id,
+      label: treatment.title,
+      title: `${treatment.title}\nTags: ${treatment.tags.join(", ")}`
     }));
 
-    function generateColorForNode(music) {
-      const colorMap = {
-        Rock: '#6A0DAD',      // Purple
-        Pop: '#FF4500',       // Orange
-        Blues: '#1E90FF',     // Blue
-        Funk: '#FFD700',      // Gold
-        Country: '#008000',   // Green
-        Jazz: '#800080',      // Purple
-        Alternative: '#9C27B0',// Violet
-        Indie: '#FF6347',     // Tomato
-        Punk: '#D32F2F',      // Red
-      };
-      return colorMap[music.genre] || '#FFFFFF';  // Default to white
-    }
-
     let edges = [];
-    musicGenresAndArtists.forEach((music, index) => {
-      for (let i = index + 1; i < musicGenresAndArtists.length; i++) {
-        const commonTags = music.tags.filter(tag =>
-          musicGenresAndArtists[i].tags.includes(tag)
+    treatmentsAndConditions.forEach((treatment, index) => {
+      for (let i = index + 1; i < treatmentsAndConditions.length; i++) {
+        const commonTags = treatment.tags.filter(tag =>
+          treatmentsAndConditions[i].tags.includes(tag)
         );
         if (commonTags.length > 0) {
           edges.push({
-            from: music.id,
-            to: musicGenresAndArtists[i].id,
+            from: treatment.id,
+            to: treatmentsAndConditions[i].id,
+            title: `Common tags: ${commonTags.join(", ")}`,
             width: commonTags.length * 1.5,
-            length: 400,
-            color: '#FFD700',  // Golden edges for common tags
+            length: 400
           });
-          // Increment the connection count for each node
-          nodes[music.id - 1].connections++;
-          nodes[musicGenresAndArtists[i].id - 1].connections++;
         }
       }
     });
 
-    // Scale the size of the nodes based on their connections
-    nodes = nodes.map(node => {
-      const connectionSize = Math.max(25, 25 + node.connections * 5); // Increase size with connections, default min size is 25
-      return {
-        ...node,
-        size: connectionSize
-      };
-    });
-
     const centerX = 0;
     const centerY = 0;
-    let radius = 800;
+    const radius = 800;
     nodes = calculateCircularPositions(nodes, radius, centerX, centerY);
 
     const container = document.getElementById("related-posts-graph");
@@ -150,7 +127,7 @@
 
     const options = {
       physics: {
-        enabled: false, // Initially disable physics
+        enabled: false  // Start with physics disabled
       },
       nodes: {
         color: {
@@ -166,23 +143,17 @@
           size: 14
         },
         borderWidth: 2,
+        size: 25,
         shape: 'dot',
         fixed: {
           x: true,
           y: true
-        },
-        shadow: {
-          enabled: true,
-          color: '#000000',
-          x: 0,
-          y: 0,
-          blur: 20
         }
       },
       edges: {
         color: {
-          color: '#FFD700', // Golden edges
-          highlight: '#FF6347' // Tomato red when highlighted
+          color: '#ffffff',
+          highlight: '#81C784'
         },
         smooth: {
           type: 'continuous',
@@ -205,7 +176,6 @@
       isPhysicsEnabled = !isPhysicsEnabled;
       if (isPhysicsEnabled) {
         toggleButton.textContent = "Disable Physics";
-        radius = 1000; // Increase the radius for more space
         network.setOptions({
           physics: {
             enabled: true,
@@ -215,26 +185,39 @@
               updateInterval: 25
             },
             barnesHut: {
-              gravitationalConstant: -80000, // Increased gravity to push nodes apart
-              centralGravity: 0.05, // Decrease gravity to allow nodes to spread
-              springLength: 300, // Increased spring length for explosion
-              springConstant: 0.0025, // Adjust spring constant for more "explosion"
+              gravitationalConstant: -50000,
+              centralGravity: 0.03,
+              springLength: 400,
+              springConstant: 0.005,
               damping: 0.09,
               avoidOverlap: 1
             },
             repulsion: {
-              nodeDistance: 500 // Increased node distance for explosion
+              nodeDistance: 400
+            }
+          },
+          nodes: {
+            fixed: {
+              x: false,
+              y: false
             }
           }
         });
-        network.stabilize();
       } else {
         toggleButton.textContent = "Enable Physics";
-        network.setOptions({
-          physics: {
-            enabled: false
+        network.setOptions({ 
+          physics: { 
+            enabled: false 
+          },
+          nodes: {
+            fixed: {
+              x: true,
+              y: true
+            }
           }
         });
+        const updatedNodes = calculateCircularPositions(nodes, radius, centerX, centerY);
+        data.nodes.update(updatedNodes);
       }
     });
   });
