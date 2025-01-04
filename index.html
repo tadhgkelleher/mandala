@@ -139,7 +139,13 @@
   },
 };
 
-    const network = new vis.Network(container, data, options);
+   const network = new vis.Network(container, data, options);
+
+// Set initial zoom and position
+network.moveTo({
+  position: { x: 0, y: 0 }, // Center of the graph
+  scale: 1.5, // Adjust zoom level (1.5x zoom in this example)
+});
 
     const toggleButton = document.querySelector(".toggle-physics-button");
     let physicsEnabled = false;
