@@ -93,14 +93,13 @@
         label: condition.title,
         title: `<h3>${condition.title}</h3><ul>${condition.tags.map(tag => `<li>${tag}</li>`).join('')}</ul>`,
         group: "condition",
-        visible: false,  // Initially hide labels
       };
       nodes.add(conditionNode);
 
       condition.tags.forEach(tag => {
         const tagNode = nodes.get(tag);
         if (!tagNode) {
-          nodes.add({ id: tag, label: tag, group: "tag", visible: false });  // Initially hide tag labels
+          nodes.add({ id: tag, label: tag, group: "tag" });
         }
         edges.add({ from: condition.id, to: tag });
 
@@ -123,36 +122,31 @@
       nodes: {
         shape: 'dot',
         font: { size: 24, color: 'white' },  // Set font color to white
+        label: false,  // Initially hide labels in force layout
       },
       physics: {
-        enabled: false,  // Initially physics is off
-        solver: 'forceAtlas2Based',
-      },
-      interaction: {
-        hover: true,
-      },
-      manipulation: {
         enabled: false,
+      },
+      layout: {
+        improvedLayout: false,
       },
     };
 
     const network = new vis.Network(container, data, options);
 
-    const toggleButton = document.querySelector('.toggle-physics-button');
-    toggleButton.addEventListener('click', function () {
-      const physicsEnabled = options.physics.enabled;
-      options.physics.enabled = !physicsEnabled;
-      network.setOptions(options);
+    document.querySelector('.toggle-physics-button').addEventListener('click', function () {
+      const physicsEnabled = !network.physics.enabled;
 
-      // Toggle label visibility when physics is enabled
-      const shouldShowLabels = !physicsEnabled;
-      nodes.forEach(node => {
-        node.visible = shouldShowLabels;
-        nodes.update(node);
+      network.setOptions({
+        physics: {
+          enabled: physicsEnabled,
+        },
+        nodes: {
+          label: physicsEnabled,  // Show label when physics is enabled
+        },
       });
     });
   });
 </script>
-
 </body>
 </html>
