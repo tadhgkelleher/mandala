@@ -112,7 +112,7 @@
         font: { size: 16 },
       },
       physics: {
-        enabled: true,
+        enabled: false,  // Initially physics is off
         solver: 'forceAtlas2Based',
       },
       interaction: {
@@ -120,17 +120,22 @@
       },
       layout: {
         randomSeed: 2,
+        hierarchical: false,
+        improvedLayout: false,
+        circular: true,  // Start with circular layout
       },
     };
 
     const network = new vis.Network(container, data, options);
-    const physicsButton = document.querySelector(".toggle-physics-button");
-    let isPhysicsEnabled = true;
 
-    physicsButton.addEventListener("click", function () {
-      isPhysicsEnabled = !isPhysicsEnabled;
-      network.setOptions({ physics: { enabled: isPhysicsEnabled } });
-      physicsButton.textContent = isPhysicsEnabled ? "Disable Physics" : "Enable Physics";
+    // Button to enable physics and change layout
+    const physicsButton = document.querySelector(".toggle-physics-button");
+    physicsButton.addEventListener("click", () => {
+      network.setOptions({
+        physics: { enabled: true },
+        layout: { improvedLayout: true },
+      });
+      physicsButton.disabled = true;  // Disable button after enabling physics
     });
   });
 </script>
