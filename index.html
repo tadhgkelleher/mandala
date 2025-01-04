@@ -47,97 +47,110 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const treatmentsAndConditions = [
-      { id: 1, title: "Cancer", tags: ["Cancer", "Chemotherapy", "Surgery", "Cancer Treatment", "Smoking", "Genetics", "Radiation Exposure", "Environmental Toxins", "Chemicals"] },
-      { id: 2, title: "Diabetes", tags: ["Diabetes", "Insulin", "Exercise", "Diet", "Obesity", "Poor Diet", "Lack of Physical Activity", "Genetics", "High Blood Sugar"] },
-      { id: 3, title: "Heart Disease", tags: ["Heart Disease", "Cholesterol", "Blood Pressure", "Heart Attack", "High Cholesterol", "Atherosclerosis", "Surgery", "Blood Clots", "Obesity"] },
-      { id: 4, title: "Asthma", tags: ["Asthma", "Inhalers", "Wheezing", "Breathing Difficulty", "Exercise", "Allergens", "Air Pollution", "Respiratory Infections", "Genetics"] },
-      { id: 5, title: "Flu", tags: ["Flu", "Influenza", "Antiviral", "Cough", "Fever", "Chills", "Fatigue", "Body Aches", "Rest", "Dehydration"] },
-      { id: 6, title: "COVID-19", tags: ["COVID-19", "Vaccine", "Virus", "Fever", "Cough", "Shortness of Breath", "Fatigue", "Isolation", "Quarantine", "PCR Test"] },
-      { id: 7, title: "Chronic Pain", tags: ["Chronic Pain", "Pain Management", "Medication", "Nerve Damage", "Inflammation", "Back Pain", "Arthritis", "Fibromyalgia", "Stress"] },
-      { id: 8, title: "Mental Health", tags: ["Mental Health", "Anxiety", "Depression", "Therapy", "Support", "Stress", "Chemical Imbalance", "Trauma", "Cognitive Behavioral Therapy"] },
-      { id: 9, title: "Alzheimer's", tags: ["Alzheimer's", "Memory Loss", "Cognitive Decline", "Dementia", "Age", "Genetics", "Brain Plaques", "Neurodegenerative", "Forgetfulness"] },
-      { id: 10, title: "Obesity", tags: ["Obesity", "Diet", "Exercise", "Insulin Resistance", "Obesity Treatment", "Bariatric Surgery", "Metabolic Syndrome", "Fatigue"] },
-      { id: 11, title: "Stroke", tags: ["Stroke", "High Blood Pressure", "Atherosclerosis", "Blood Clots", "Rehabilitation", "Physiotherapy", "Stroke Recovery", "Speech Therapy"] },
-      { id: 12, title: "Kidney Disease", tags: ["Kidney Disease", "Dialysis", "Transplant", "High Blood Pressure", "Diabetes", "Chronic Kidney Disease", "Genetics", "Kidney Function"] },
-      { id: 13, title: "Sleep Disorders", tags: ["Sleep Apnea", "Insomnia", "Restless Legs Syndrome", "CPAP", "Sleep Hygiene", "Fatigue", "Medication", "Stress"] },
-      { id: 14, title: "Lung Diseases", tags: ["COPD", "Asthma", "Chronic Bronchitis", "Pulmonary Fibrosis", "Lung Cancer", "Smoking", "Air Pollution", "Breathing Difficulty"] },
-      { id: 15, title: "Parkinson's Disease", tags: ["Parkinson's", "Tremors", "Shuffling Walk", "Bradykinesia", "Motor Symptoms", "Dopamine", "Medication", "Exercise Therapy"] },
-      { id: 16, title: "Liver Disease", tags: ["Hepatitis", "Cirrhosis", "Fatty Liver Disease", "Liver Cancer", "Alcohol Abuse", "Hepatitis B and C", "Liver Transplant", "Genetics"] },
-      { id: 17, title: "Rheumatoid Arthritis", tags: ["Rheumatoid Arthritis", "Joint Pain", "Inflammation", "Immune System", "Medication", "Physical Therapy", "Chronic Pain", "Fatigue"] },
-      { id: 18, title: "Epilepsy", tags: ["Epilepsy", "Seizures", "Neurology", "Medication", "Brain Disorder", "Anticonvulsants", "Genetics"] },
-      { id: 19, title: "Multiple Sclerosis", tags: ["Multiple Sclerosis", "Nerve Damage", "Immune System", "Fatigue", "Balance Issues", "Physical Therapy", "Pain Management", "Relapse Remitting"] },
-      { id: 20, title: "Chronic Fatigue Syndrome", tags: ["Chronic Fatigue", "Fatigue", "Sleep Disorders", "Mental Fog", "Pain Management", "Exercise Therapy", "Stress"] },
-      { id: 21, title: "Thyroid Disorders", tags: ["Hypothyroidism", "Hyperthyroidism", "Thyroid Cancer", "T3/T4 Hormones", "Medication", "Fatigue", "Weight Gain/Loss"] },
-      { id: 22, title: "HIV/AIDS", tags: ["HIV", "AIDS", "Immunodeficiency", "Viral Infection", "Antiretroviral Therapy", "Prevention", "Opportunistic Infections"] },
-      { id: 23, title: "Tuberculosis", tags: ["Tuberculosis", "Mycobacterium Tuberculosis", "Chest Pain", "Cough", "Night Sweats", "Antibiotics", "Infection", "Pulmonary"] },
-      { id: 24, title: "Malaria", tags: ["Malaria", "Parasite", "Mosquito Bites", "Fever", "Chills", "Antimalarial Drugs", "Prevention", "Tropical Diseases"] },
-      { id: 25, title: "Hepatitis B", tags: ["Hepatitis B", "Liver Infection", "Jaundice", "Liver Damage", "Vaccine", "Antiviral Drugs", "Chronic Hepatitis"] },
-      { id: 26, title: "Gastroesophageal Reflux Disease (GERD)", tags: ["GERD", "Acid Reflux", "Heartburn", "Esophageal Damage", "Medications", "Antacids", "Lifestyle Changes"] },
-      { id: 27, title: "Celiac Disease", tags: ["Celiac Disease", "Gluten Sensitivity", "Diarrhea", "Weight Loss", "Bloating", "Autoimmune Disorder", "Dietary Changes"] },
-      { id: 28, title: "Chronic Bronchitis", tags: ["Chronic Bronchitis", "Cough", "Mucus", "COPD", "Smoking", "Air Pollution", "Respiratory Infections", "Medication"] },
-      { id: 29, title: "Psoriasis", tags: ["Psoriasis", "Skin Rash", "Red Patches", "Itchy Skin", "Autoimmune", "Topical Treatment", "Steroids", "UV Therapy"] },
-      { id: 30, title: "Gout", tags: ["Gout", "Joint Pain", "Uric Acid", "Medication", "Inflammation", "Dietary Triggers", "Dehydration", "Kidney Disease"] },
-      { id: 31, title: "Osteoporosis", tags: ["Osteoporosis", "Bone Density", "Bone Fractures", "Calcium", "Vitamin D", "Bone Health", "Weight-bearing Exercise"] }
-    ];
+document.addEventListener("DOMContentLoaded", function () {
+  const treatmentsAndConditions = [
+    { id: 1, title: "Cancer", tags: ["Cancer", "Chemotherapy", "Surgery", "Cancer Treatment", "Smoking", "Genetics", "Radiation Exposure", "Environmental Toxins", "Chemicals"] },
+    { id: 2, title: "Diabetes", tags: ["Diabetes", "Insulin", "Exercise", "Diet", "Obesity", "Poor Diet", "Lack of Physical Activity", "Genetics", "High Blood Sugar"] },
+    { id: 3, title: "Heart Disease", tags: ["Heart Disease", "Cholesterol", "Blood Pressure", "Heart Attack", "High Cholesterol", "Atherosclerosis", "Surgery", "Blood Clots", "Obesity"] },
+    { id: 4, title: "Asthma", tags: ["Asthma", "Inhalers", "Wheezing", "Breathing Difficulty", "Exercise", "Allergens", "Air Pollution", "Respiratory Infections", "Genetics"] },
+    { id: 5, title: "Flu", tags: ["Flu", "Influenza", "Antiviral", "Cough", "Fever", "Chills", "Fatigue", "Body Aches", "Rest", "Dehydration"] },
+    { id: 6, title: "COVID-19", tags: ["COVID-19", "Vaccine", "Virus", "Fever", "Cough", "Shortness of Breath", "Fatigue", "Isolation", "Quarantine", "PCR Test"] },
+    { id: 7, title: "Chronic Pain", tags: ["Chronic Pain", "Pain Management", "Medication", "Nerve Damage", "Inflammation", "Back Pain", "Arthritis", "Fibromyalgia", "Stress"] },
+    { id: 8, title: "Mental Health", tags: ["Mental Health", "Anxiety", "Depression", "Therapy", "Support", "Stress", "Chemical Imbalance", "Trauma", "Cognitive Behavioral Therapy"] },
+    { id: 9, title: "Alzheimer's", tags: ["Alzheimer's", "Memory Loss", "Cognitive Decline", "Dementia", "Age", "Genetics", "Brain Plaques", "Neurodegenerative", "Forgetfulness"] },
+    { id: 10, title: "Obesity", tags: ["Obesity", "Diet", "Exercise", "Insulin Resistance", "Obesity Treatment", "Bariatric Surgery", "Metabolic Syndrome", "Fatigue"] },
+    { id: 11, title: "Stroke", tags: ["Stroke", "High Blood Pressure", "Atherosclerosis", "Blood Clots", "Rehabilitation", "Physiotherapy", "Stroke Recovery", "Speech Therapy"] },
+    { id: 12, title: "Kidney Disease", tags: ["Kidney Disease", "Dialysis", "Transplant", "High Blood Pressure", "Diabetes", "Chronic Kidney Disease", "Genetics", "Kidney Function"] },
+    { id: 13, title: "Sleep Disorders", tags: ["Sleep Apnea", "Insomnia", "Restless Legs Syndrome", "CPAP", "Sleep Hygiene", "Fatigue", "Medication", "Stress"] },
+    { id: 14, title: "Lung Diseases", tags: ["COPD", "Asthma", "Chronic Bronchitis", "Pulmonary Fibrosis", "Lung Cancer", "Smoking", "Air Pollution", "Breathing Difficulty"] },
+    { id: 15, title: "Parkinson's Disease", tags: ["Parkinson's", "Tremors", "Shuffling Walk", "Bradykinesia", "Motor Symptoms", "Dopamine", "Medication", "Exercise Therapy"] },
+    { id: 16, title: "Liver Disease", tags: ["Hepatitis", "Cirrhosis", "Fatty Liver Disease", "Liver Cancer", "Alcohol Abuse", "Hepatitis B and C", "Liver Transplant", "Genetics"] },
+    { id: 17, title: "Rheumatoid Arthritis", tags: ["Rheumatoid Arthritis", "Joint Pain", "Inflammation", "Immune System", "Medication", "Physical Therapy", "Chronic Pain", "Fatigue"] },
+    { id: 18, title: "Epilepsy", tags: ["Epilepsy", "Seizures", "Neurology", "Medication", "Brain Disorder", "Anticonvulsants", "Genetics"] },
+    { id: 19, title: "Multiple Sclerosis", tags: ["Multiple Sclerosis", "Nerve Damage", "Immune System", "Fatigue", "Balance Issues", "Physical Therapy", "Pain Management", "Relapse Remitting"] },
+    { id: 20, title: "Chronic Fatigue Syndrome", tags: ["Chronic Fatigue", "Fatigue", "Sleep Disorders", "Mental Fog", "Pain Management", "Exercise Therapy", "Stress"] },
+    { id: 21, title: "Thyroid Disorders", tags: ["Hypothyroidism", "Hyperthyroidism", "Thyroid Cancer", "T3/T4 Hormones", "Medication", "Fatigue", "Weight Gain/Loss"] },
+    { id: 22, title: "HIV/AIDS", tags: ["HIV", "AIDS", "Immunodeficiency", "Viral Infection", "Antiretroviral Therapy", "Prevention", "Opportunistic Infections"] },
+    { id: 23, title: "Tuberculosis", tags: ["Tuberculosis", "Mycobacterium Tuberculosis", "Chest Pain", "Cough", "Night Sweats", "Antibiotics", "Infection", "Pulmonary"] },
+    { id: 24, title: "Malaria", tags: ["Malaria", "Parasite", "Mosquito Bites", "Fever", "Chills", "Antimalarial Drugs", "Prevention", "Tropical Diseases"] },
+    { id: 25, title: "Hepatitis B", tags: ["Hepatitis B", "Liver Infection", "Jaundice", "Liver Damage", "Vaccine", "Antiviral Drugs", "Chronic Hepatitis"] },
+    { id: 26, title: "Gastroesophageal Reflux Disease (GERD)", tags: ["GERD", "Acid Reflux", "Heartburn", "Esophageal Damage", "Medications", "Antacids", "Lifestyle Changes"] },
+    { id: 27, title: "Celiac Disease", tags: ["Celiac Disease", "Gluten Sensitivity", "Diarrhea", "Weight Loss", "Bloating", "Autoimmune Disorder", "Dietary Changes"] },
+    { id: 28, title: "Chronic Bronchitis", tags: ["Chronic Bronchitis", "Cough", "Mucus", "COPD", "Smoking", "Air Pollution", "Respiratory Infections", "Medication"] },
+    { id: 29, title: "Psoriasis", tags: ["Psoriasis", "Skin Rash", "Red Patches", "Itchy Skin", "Autoimmune", "Topical Treatment", "Steroids", "UV Therapy"] },
+    { id: 30, title: "Gout", tags: ["Gout", "Joint Pain", "Uric Acid", "Medication", "Inflammation", "Dietary Triggers", "Dehydration", "Kidney Disease"] },
+    { id: 31, title: "Osteoporosis", tags: ["Osteoporosis", "Bone Density", "Bone Fractures", "Calcium", "Vitamin D", "Bone Health", "Weight-bearing Exercise"] }
+  ];
 
-    const nodes = new vis.DataSet([]);
-    const edges = new vis.DataSet([]);
+  const nodes = new vis.DataSet([]);
+  const edges = new vis.DataSet([]);
 
-    treatmentsAndConditions.forEach(condition => {
-      const conditionNode = {
-        id: condition.id,
-        label: condition.title,
-        title: `<h3>${condition.title}</h3><ul>${condition.tags.map(tag => `<li>${tag}</li>`).join('')}</ul>`,
-        group: "condition",
-      };
-      nodes.add(conditionNode);
+  const tagConnectionCount = {};
 
-      condition.tags.forEach(tag => {
-        const tagNode = nodes.get(tag);
-        if (!tagNode) {
-          nodes.add({ id: tag, label: tag, group: "tag" });
-        }
-        edges.add({ from: condition.id, to: tag });
-      });
-    });
-
-    const container = document.getElementById("related-posts-graph");
-    const data = { nodes: nodes, edges: edges };
-    const options = {
-      nodes: {
-        shape: 'dot',
-        size: 10,
-        font: { size: 16 },
-      },
-      physics: {
-        enabled: false,  // Initially physics is off
-        solver: 'forceAtlas2Based',
-      },
-      interaction: {
-        hover: true,
-      },
-      layout: {
-        randomSeed: 2,
-        hierarchical: false,
-        improvedLayout: false,
-        circular: true,  // Start with circular layout
-      },
+  treatmentsAndConditions.forEach(condition => {
+    const conditionNode = {
+      id: condition.id,
+      label: condition.title,
+      title: `<h3>${condition.title}</h3><ul>${condition.tags.map(tag => `<li>${tag}</li>`).join('')}</ul>`,
+      group: "condition",
     };
+    nodes.add(conditionNode);
 
-    const network = new vis.Network(container, data, options);
+    condition.tags.forEach(tag => {
+      // Track the number of edges (connections) for each tag
+      tagConnectionCount[tag] = (tagConnectionCount[tag] || 0) + 1;
 
-    // Button to enable physics and change layout
-    const physicsButton = document.querySelector(".toggle-physics-button");
-    physicsButton.addEventListener("click", () => {
-      network.setOptions({
-        physics: { enabled: true },
-        layout: { improvedLayout: true },
-      });
-      physicsButton.disabled = true;  // Disable button after enabling physics
+      const tagNode = nodes.get(tag);
+      if (!tagNode) {
+        nodes.add({ id: tag, label: tag, group: "tag" });
+      }
+      edges.add({ from: condition.id, to: tag });
     });
   });
+
+  // Update the size of the tag nodes based on their connection count
+  nodes.forEach(node => {
+    if (node.group === "tag") {
+      const connectionCount = tagConnectionCount[node.id] || 0;
+      node.size = Math.min(20 + connectionCount * 2, 50); // Adjust size based on connections
+    }
+  });
+
+  const container = document.getElementById("related-posts-graph");
+  const data = { nodes: nodes, edges: edges };
+  const options = {
+    nodes: {
+      shape: 'dot',
+      font: { size: 16 },
+    },
+    physics: {
+      enabled: false,  // Initially physics is off
+      solver: 'forceAtlas2Based',
+    },
+    interaction: {
+      hover: true,
+    },
+    layout: {
+      randomSeed: 2,
+      hierarchical: false,
+      improvedLayout: false,
+      circular: true,  // Start with circular layout
+    },
+  };
+
+  const network = new vis.Network(container, data, options);
+
+  // Button to enable physics and change layout
+  const physicsButton = document.querySelector(".toggle-physics-button");
+  physicsButton.addEventListener("click", () => {
+    network.setOptions({
+      physics: { enabled: true },
+      layout: { improvedLayout: true },
+    });
+    physicsButton.disabled = true;  // Disable button after enabling physics
+  });
+});
+
 </script>
 </body>
 </html>
