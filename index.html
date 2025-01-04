@@ -1,249 +1,314 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Treatment and Condition Connections</title>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css" rel="stylesheet">
-  <style>
-    #related-posts-graph-container {
-      position: relative;
-      background-color: black;
-      margin: 0 auto;
-      width: 100%;
-      padding: 10px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Musician Network Analysis Tool</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #121212;
+            color: #EAEAEA;
+            overflow: hidden;
+        }
 
-    #related-posts-graph {
-      height: 700px;
-      width: 100%;
-    }
+        .layout {
+            display: grid;
+            grid-template-columns: 250px 1fr 300px;
+            height: 100vh;
+        }
 
-    .toggle-physics-button {
-      background-color: #4a90e2;
-      color: white;
-      padding: 8px 16px;
-      border: none;
-      border-radius: 4px;
-      margin-top: 10px;
-      cursor: pointer;
-      font-size: 16px;
-    }
+        .controls-panel {
+            background: #2C2C2C;
+            padding: 20px;
+            border-right: 1px solid #444;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
+            overflow-y: auto;
+        }
 
-    .toggle-physics-button:hover {
-      background-color: #357abd;
-    }
-  </style>
+        .controls-panel h3 {
+            font-size: 18px;
+            margin: 0 0 10px;
+            color: #EAEAEA;
+        }
+
+        .main-view {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .details-panel {
+            background: #2C2C2C;
+            padding: 20px;
+            border-left: 1px solid #444;
+            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.5);
+            overflow-y: auto;
+        }
+
+        #network-container {
+            width: 100%;
+            height: 100%;
+            background: #1A1A1A;
+            border-radius: 8px;
+        }
+
+        .control-group {
+            margin-bottom: 20px;
+        }
+
+        button {
+            background: #4A90E2;
+            color: #FFFFFF;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.3s ease;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        button:hover {
+            background: #357ABD;
+        }
+
+        .search-box, .severity-filter {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #444;
+            border-radius: 8px;
+            background: #1A1A1A;
+            color: #EAEAEA;
+            margin-bottom: 12px;
+            transition: border-color 0.2s ease;
+        }
+
+        .search-box:focus, .severity-filter:focus {
+            border-color: #4A90E2;
+        }
+
+        .stats {
+            font-size: 14px;
+            color: #B0B0B0;
+            margin-top: 30px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .node-details {
+            display: none;
+        }
+
+        .node-details.active {
+            display: block;
+        }
+
+        .tag {
+            display: inline-block;
+            background: #4A90E2;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 14px;
+            margin: 4px 6px;
+            color: #FFFFFF;
+        }
+
+        .severity-high { background: #FF4444; }
+        .severity-medium { background: #FFBB33; }
+        .severity-low { background: #00C851; }
+
+        .filters-active {
+            display: none;
+            background: #357ABD;
+            padding: 6px 12px;
+            border-radius: 4px;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .mini-map {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            width: 200px;
+            height: 200px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #444;
+            border-radius: 8px;
+        }
+
+        /* Transitions for smooth interaction */
+        .control-group button, .search-box, .severity-filter {
+            transition: all 0.3s ease;
+        }
+
+        /* Hover effect for controls */
+        .control-group button:hover {
+            background: #357ABD;
+        }
+
+    </style>
 </head>
 <body>
+    <div class="layout">
+        <div class="controls-panel">
+            <div class="control-group">
+                <h3>Search</h3>
+                <input type="text" class="search-box" placeholder="Search music venues...">
+            </div>
 
-<div id="related-posts-graph-container">
-  <div id="related-posts-graph"></div>
-  <button class="toggle-physics-button">Enable Physics</button>
-</div>
+            <div class="control-group">
+                <h3>Layout</h3>
+                <button id="toggle-physics">Toggle Physics</button>
+                <button id="circular-layout">Circular Layout</button>
+                <button id="force-layout">Force Layout</button>
+            </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-const treatmentsAndConditions = [
-  { id: 1, title: "Cancer", tags: ["Cancer", "Chemotherapy", "Surgery", "Rehabilitation", "Support"] },
-  { id: 2, title: "Diabetes", tags: ["Diabetes", "Insulin", "Exercise", "Diet", "Support"] },
-  { id: 3, title: "Heart Disease", tags: ["Heart", "Cholesterol", "Surgery", "Exercise", "Diet"] },
-  { id: 4, title: "Asthma", tags: ["Asthma", "Inhalers", "Exercise", "Lung", "Prevention"] },
-  { id: 5, title: "Flu", tags: ["Flu", "Antiviral", "Rest", "Prevention", "Support"] },
-  { id: 6, title: "COVID-19", tags: ["COVID-19", "Vaccine", "Prevention", "Support", "Rest"] },
-  { id: 7, title: "Chronic Pain", tags: ["Chronic Pain", "Medication", "Exercise", "Support", "Therapy"] },
-  { id: 8, title: "Mental Health", tags: ["Mental Health", "Therapy", "Support", "Medication", "Depression"] },
-  { id: 9, title: "Alzheimer's", tags: ["Alzheimer's", "Memory", "Care", "Support", "Therapy"] },
-  { id: 10, title: "Obesity", tags: ["Obesity", "Diet", "Exercise", "Surgery", "Prevention"] },
-  { id: 11, title: "Stroke", tags: ["Stroke", "Rehabilitation", "Physiotherapy", "Exercise", "Care"] },
-  { id: 12, title: "Kidney Disease", tags: ["Kidney", "Dialysis", "Transplant", "Support", "Care"] },
-  { id: 13, title: "Sleep Disorder", tags: ["Sleep", "Insomnia", "CPAP", "Rest", "Support"] },
-  { id: 14, title: "Lung Disease", tags: ["Lung", "COPD", "Oxygen", "Prevention", "Support"] },
-  { id: 15, title: "Mental Health Therapy", tags: ["Mental Health", "Therapy", "Support", "Depression", "Medication"] },
-  { id: 16, title: "Liver Disease", tags: ["Liver", "Hepatitis", "Transplant", "Care", "Support"] },
-  { id: 17, title: "Cancer Rehabilitation", tags: ["Cancer", "Rehabilitation", "Exercise", "Support", "Therapy"] },
-  { id: 18, title: "Weight Loss Surgery", tags: ["Obesity", "Surgery", "Diet", "Exercise", "Prevention"] },
-  { id: 19, title: "Parkinson's Disease", tags: ["Parkinson's", "Exercise", "Medication", "Support", "Therapy"] },
-  { id: 20, title: "Chronic Fatigue", tags: ["Fatigue", "Exercise", "Support", "Rest", "Therapy"] },
-  { id: 21, title: "Depression", tags: ["Depression", "Therapy", "Medication", "Support", "Mental Health"] },
-  { id: 22, title: "HIV/AIDS", tags: ["HIV", "AIDS", "Medication", "Support", "Prevention"] },
-  { id: 23, title: "Unrelated Data 1", tags: ["Unrelated", "Data", "Test", "Random", "Info"] },
-  { id: 24, title: "Unrelated Data 2", tags: ["Unrelated", "Data", "Test", "Placeholder", "Example"] },
-  { id: 25, title: "Unrelated Data 3", tags: ["Test", "Random", "Info", "Example", "Placeholder"] }
-];
+            <div class="control-group">
+                <h3>Filters</h3>
+                <select class="severity-filter">
+                    <option value="all">All Music Genres</option>
+                    <option value="high">Rock</option>
+                    <option value="medium">Pop</option>
+                    <option value="low">Jazz</option>
+                </select>
+            </div>
 
+            <div class="stats">
+                <p>Venues: <span id="node-count">0</span></p>
+                <p>Connections: <span id="edge-count">0</span></p>
+                <p>Selected: <span id="selected-count">0</span></p>
+            </div>
+        </div>
 
+        <div class="main-view">
+            <div id="network-container"></div>
+            <div class="mini-map"></div>
+        </div>
 
-    function calculateCircularPositions(nodes, radius, centerX, centerY) {
-      const angleStep = (2 * Math.PI) / nodes.length;
-      return nodes.map((node, index) => {
-        const angle = angleStep * index;
-        return {
-          id: node.id,
-          label: node.label,
-          title: node.title,
-          x: centerX + radius * Math.cos(angle),
-          y: centerY + radius * Math.sin(angle)
-        };
-      });
-    }
+        <div class="details-panel">
+            <div class="node-details active">
+                <h2>Selected Venue</h2>
+                <div id="selected-title">No venue selected</div>
+                <div id="selected-severity"></div>
+                <h3>Genres</h3>
+                <div id="selected-tags"></div>
+                <h3>Related Venues</h3>
+                <div id="related-venues"></div>
+                <h3>Performers</h3>
+                <div id="performers"></div>
+            </div>
+        </div>
+    </div>
 
-    let nodes = treatmentsAndConditions.map(treatment => ({
-      id: treatment.id,
-      label: treatment.title,
-      title: `${treatment.title}\nTags: ${treatment.tags.join(", ")}`
-    }));
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const musicData = [
+                {
+                    id: 1,
+                    title: "Alice Springs",
+                    tags: ["Rock", "Blues", "Live Music"],
+                    severity: "high",
+                    performers: ["The Rambling Turkeys", "Mik Pyro"],
+                    genre: "Rock"
+                },
+                {
+                    id: 2,
+                    title: "Catch the Monkey",
+                    tags: ["Pop", "Jazz", "Indie"],
+                    severity: "medium",
+                    performers: ["Glee Club", "Hank Half Head"],
+                    genre: "Pop"
+                },
+                {
+                    id: 3,
+                    title: "Glee Club",
+                    tags: ["Pop", "Live Music", "Indie"],
+                    severity: "medium",
+                    performers: ["Hank Interference", "Sugar Honey"],
+                    genre: "Pop"
+                },
+                // Additional data goes here...
+            ];
 
-    let edges = [];
-    treatmentsAndConditions.forEach((treatment, index) => {
-      for (let i = index + 1; i < treatmentsAndConditions.length; i++) {
-        const commonTags = treatment.tags.filter(tag =>
-          treatmentsAndConditions[i].tags.includes(tag)
-        );
-        if (commonTags.length > 0) {
-          edges.push({
-            from: treatment.id,
-            to: treatmentsAndConditions[i].id,
-            title: `Common tags: ${commonTags.join(", ")}`,
-            width: commonTags.length * 1.5,
-            length: 400
-          });
-        }
-      }
-    });
+            const nodes = new vis.DataSet(
+                musicData.map(item => ({
+                    id: item.id,
+                    label: item.title,
+                    title: `${item.title}\nGenre: ${item.genre}\nPerformers: ${item.performers.join(", ")}`,
+                    color: {
+                        background: item.severity === "high" ? "#FF4444" : 
+                                  item.severity === "medium" ? "#FFBB33" : "#00C851",
+                        border: "#2E7D32",
+                        highlight: { background: '#81C784', border: '#4CAF50' }
+                    },
+                    size: item.severity === "high" ? 30 : 
+                          item.severity === "medium" ? 25 : 20
+                }))
+            );
 
-    const centerX = 0;
-    const centerY = 0;
-    const radius = 800;
-    nodes = calculateCircularPositions(nodes, radius, centerX, centerY);
+            const edges = new vis.DataSet();
+            musicData.forEach((item1, index) => {
+                musicData.slice(index + 1).forEach(item2 => {
+                    const commonTags = item1.tags.filter(tag => 
+                        item2.tags.includes(tag)
+                    );
+                    if (commonTags.length > 0) {
+                        edges.add({
+                            from: item1.id,
+                            to: item2.id,
+                            title: `Common Genres: ${commonTags.join(", ")}`,
+                            width: commonTags.length * 2,
+                            color: { color: '#ffffff', highlight: '#81C784' },
+                            length: 400
+                        });
+                    }
+                });
+            });
 
-    const container = document.getElementById("related-posts-graph");
-    const data = {
-      nodes: new vis.DataSet(nodes),
-      edges: new vis.DataSet(edges)
-    };
+            const container = document.getElementById("network-container");
+            const data = { nodes, edges };
+            const options = {
+                physics: {
+                    enabled: true,
+                    barnesHut: {
+                        gravitationalConstant: -50000,
+                        centralGravity: 0.3,
+                        springLength: 200,
+                        springConstant: 0.02
+                    }
+                },
+                layout: { randomSeed: 2 },
+                nodes: {
+                    borderWidth: 2,
+                    shape: 'dot',
+                    font: { size: 16, color: '#EAEAEA' }
+                },
+                edges: {
+                    width: 2,
+                    color: '#BDBDBD'
+                },
+                manipulation: {
+                    enabled: true
+                }
+            };
+            const network = new vis.Network(container, data, options);
 
-    const options = {
-  physics: {
-    enabled: false  // Start with physics disabled
-  },
-  nodes: {
-    color: {
-      background: '#4CAF50',
-      border: '#2E7D32',
-      highlight: {
-        background: '#81C784',
-        border: '#4CAF50'
-      }
-    },
-    font: {
-      color: '#ffffff',
-      size: 14
-    },
-    borderWidth: 2,
-    size: 25,
-    shape: 'dot',
-    fixed: {
-      x: true,
-      y: true
-    }
-  },
-  edges: {
-    color: {
-      color: '#ffffff',
-      highlight: '#81C784'
-    },
-    smooth: { 
-      enabled: false  // Ensure straight lines by disabling smooth curves in the initial state
-    }
-  },
-  interaction: {
-    hover: true,
-    tooltipDelay: 200,
-    navigationButtons: true,
-    keyboard: true
-  }
-};
-
-
-    const network = new vis.Network(container, data, options);
-    let isPhysicsEnabled = false;
-    const toggleButton = document.querySelector(".toggle-physics-button");
-
-   toggleButton.addEventListener("click", function() {
-  isPhysicsEnabled = !isPhysicsEnabled;
-  if (isPhysicsEnabled) {
-    toggleButton.textContent = "Disable Physics";
-    network.setOptions({
-      physics: {
-        enabled: true,
-        stabilization: {
-          enabled: true,
-          iterations: 1000,
-          updateInterval: 25
-        },
-        barnesHut: {
-          gravitationalConstant: -50000,
-          centralGravity: 0.03,
-          springLength: 400,
-          springConstant: 0.005,
-          damping: 0.09,
-          avoidOverlap: 1
-        },
-        repulsion: {
-          nodeDistance: 400
-        }
-      },
-      nodes: {
-        fixed: {
-          x: false,
-          y: false
-        }
-      },
-      edges: {
-        color: {
-          color: '#ffffff',
-          highlight: '#81C784'
-        },
-        smooth: {
-          type: 'dynamic',
-          roundness: 0.5
-        }
-      }
-    });
-  } else {
-    toggleButton.textContent = "Enable Physics";
-    network.setOptions({ 
-      physics: { 
-        enabled: false 
-      },
-      nodes: {
-        fixed: {
-          x: true,
-          y: true
-        }
-      },
-      edges: {
-        color: {
-          color: '#ffffff',
-          highlight: '#81C784'
-        },
-        smooth: { 
-          enabled: false  // Ensure straight lines by disabling smooth curves
-        }
-      }
-    });
-    const updatedNodes = calculateCircularPositions(nodes, radius, centerX, centerY);
-    data.nodes.update(updatedNodes);
-  }
-});
-
-  });
-</script>
-
+            // Add event listeners here to update the details-panel when a node is clicked
+            network.on("click", function (event) {
+                const nodeId = event.nodes[0];
+                const node = musicData.find(item => item.id === nodeId);
+                document.getElementById("selected-title").innerText = node ? node.title : 'No venue selected';
+                document.getElementById("selected-severity").innerText = node ? `Severity: ${node.severity}` : '';
+                document.getElementById("selected-tags").innerHTML = node ? node.tags.map(tag => `<span class="tag">${tag}</span>`).join('') : '';
+                document.getElementById("performers").innerText = node ? node.performers.join(', ') : '';
+                document.getElementById("related-venues").innerText = "Related venues go here...";
+            });
+        });
+    </script>
 </body>
 </html>
