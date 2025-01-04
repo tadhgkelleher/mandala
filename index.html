@@ -6,36 +6,65 @@
   <title>Treatment and Condition Connections</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css" rel="stylesheet">
   <style>
-    #related-posts-graph-container {
-      position: relative;
-      background-color: black;
-      margin: 0 auto;
-      width: 100%;
-      padding: 10px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
+   #related-posts-graph-container {
+  position: relative;
+  background: linear-gradient(135deg, #212121, #424242); /* Add gradient for depth */
+  margin: 0 auto;
+  width: 90%;
+  max-width: 1200px;  /* Limit the container width */
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 8px; /* Smooth edges */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+  overflow: hidden; /* Ensure nothing spills out */
+}
 
-    #related-posts-graph {
-      height: 700px;
-      width: 100%;
-    }
+#related-posts-graph {
+  height: 700px;
+  width: 100%;
+  border-radius: 8px; /* Round the edges of the graph */
+}
 
-    .toggle-physics-button {
-      background-color: #4a90e2;
-      color: white;
-      padding: 8px 16px;
-      border: none;
-      border-radius: 4px;
-      margin-top: 10px;
-      cursor: pointer;
-      font-size: 16px;
-    }
+.toggle-physics-button {
+  background-color: #4a90e2;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 4px;
+  margin-top: 15px;
+  cursor: pointer;
+  font-size: 16px;
+  text-transform: uppercase; /* Uppercase for readability */
+  letter-spacing: 1px; /* Subtle spacing for better readability */
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth hover and click effects */
+}
 
-    .toggle-physics-button:hover {
-      background-color: #357abd;
-    }
+.toggle-physics-button:hover {
+  background-color: #357abd;
+  transform: scale(1.05); /* Slight scale-up for emphasis */
+}
+
+.toggle-physics-button:active {
+  transform: scale(1); /* Return to normal size on click */
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f4f4f4; /* Light background for contrast */
+  color: #333; /* Dark text for readability */
+  margin: 0;
+  padding: 0;
+}
+
+h1 {
+  text-align: center;
+  font-size: 2.5rem;
+  color: #333;
+  margin-bottom: 20px;
+}
+
   </style>
 </head>
 <body>
