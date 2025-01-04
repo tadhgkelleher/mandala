@@ -355,27 +355,35 @@
       edges: edges
     };
 
-    var options = {
-      nodes: {
-        font: { size: 14 },
-        borderWidth: 2
-      },
-      edges: {
-        width: 2,
-        arrows: 'to'
-      },
-      physics: {
-        enabled: true,
-        solver: 'forceAtlas2Based',
-        forceAtlas2Based: {
-          gravitationalConstant: -50,
-          centralGravity: 0.01,
-          springLength: 200,
-          springConstant: 0.08,
-          damping: 0.4
-        }
-      }
-    };
+   var options = {
+  nodes: {
+    font: { size: 14 },
+    borderWidth: 2
+  },
+  edges: {
+    width: 2,
+    arrows: 'to'
+  },
+  physics: {
+    enabled: true,
+    solver: 'forceAtlas2Based',
+    forceAtlas2Based: {
+      gravitationalConstant: -50,
+      centralGravity: 0.01,
+      springLength: 200,
+      springConstant: 0.08,
+      damping: 0.4
+    }
+  },
+  interaction: {
+    dragNodes: true,  // Allow nodes to be dragged
+    zoomView: true,   // Enable zoom with mouse wheel and touch gestures
+    mouseWheel: true, // Allow zoom with mouse wheel
+    navigationButtons: true, // Optional: Adds navigation buttons to zoom in/out
+    keyboard: true,   // Allow zooming using keyboard keys
+  }
+};
+
 
     var network = new vis.Network(container, data, options);
 
