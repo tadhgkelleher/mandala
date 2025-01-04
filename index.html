@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Musician Network Analysis Tool</title>
+    <title>Musician Network Analysis</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css" rel="stylesheet">
     <style>
         body {
@@ -16,42 +16,35 @@
 
         .layout {
             display: grid;
-            grid-template-columns: 250px 1fr 300px;
+            grid-template-columns: 1fr 3fr;
             height: 100vh;
+            gap: 20px;
         }
 
         .controls-panel {
             background: #2C2C2C;
             padding: 20px;
-            border-right: 1px solid #444;
+            border-radius: 8px;
             box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
             overflow-y: auto;
         }
 
         .controls-panel h3 {
             font-size: 18px;
-            margin: 0 0 10px;
+            margin: 0 0 15px;
             color: #EAEAEA;
         }
 
         .main-view {
             position: relative;
             overflow: hidden;
-        }
-
-        .details-panel {
-            background: #2C2C2C;
-            padding: 20px;
-            border-left: 1px solid #444;
-            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.5);
-            overflow-y: auto;
+            border-radius: 8px;
+            background: #1A1A1A;
         }
 
         #network-container {
             width: 100%;
             height: 100%;
-            background: #1A1A1A;
-            border-radius: 8px;
         }
 
         .control-group {
@@ -94,16 +87,6 @@
             font-size: 14px;
             color: #B0B0B0;
             margin-top: 30px;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .node-details {
-            display: none;
-        }
-
-        .node-details.active {
-            display: block;
         }
 
         .tag {
@@ -119,45 +102,21 @@
         .severity-high { background: #FF4444; }
         .severity-medium { background: #FFBB33; }
         .severity-low { background: #00C851; }
-
-        .filters-active {
-            display: none;
-            background: #357ABD;
-            padding: 6px 12px;
-            border-radius: 4px;
-            margin-top: 15px;
-            font-size: 14px;
-        }
-
-        .mini-map {
-            position: absolute;
-            bottom: 30px;
-            right: 30px;
-            width: 200px;
-            height: 200px;
-            background: rgba(0, 0, 0, 0.8);
-            border: 1px solid #444;
-            border-radius: 8px;
-        }
-
-        /* Transitions for smooth interaction */
+        
+        /* Smooth layout transitions */
         .control-group button, .search-box, .severity-filter {
             transition: all 0.3s ease;
-        }
-
-        /* Hover effect for controls */
-        .control-group button:hover {
-            background: #357ABD;
         }
 
     </style>
 </head>
 <body>
     <div class="layout">
+        <!-- Controls Panel -->
         <div class="controls-panel">
             <div class="control-group">
-                <h3>Search</h3>
-                <input type="text" class="search-box" placeholder="Search music venues...">
+                <h3>Search Venues</h3>
+                <input type="text" class="search-box" placeholder="Search for a music venue...">
             </div>
 
             <div class="control-group">
@@ -170,7 +129,7 @@
             <div class="control-group">
                 <h3>Filters</h3>
                 <select class="severity-filter">
-                    <option value="all">All Music Genres</option>
+                    <option value="all">All Genres</option>
                     <option value="high">Rock</option>
                     <option value="medium">Pop</option>
                     <option value="low">Jazz</option>
@@ -180,27 +139,12 @@
             <div class="stats">
                 <p>Venues: <span id="node-count">0</span></p>
                 <p>Connections: <span id="edge-count">0</span></p>
-                <p>Selected: <span id="selected-count">0</span></p>
             </div>
         </div>
 
+        <!-- Main View (Network Visualization) -->
         <div class="main-view">
             <div id="network-container"></div>
-            <div class="mini-map"></div>
-        </div>
-
-        <div class="details-panel">
-            <div class="node-details active">
-                <h2>Selected Venue</h2>
-                <div id="selected-title">No venue selected</div>
-                <div id="selected-severity"></div>
-                <h3>Genres</h3>
-                <div id="selected-tags"></div>
-                <h3>Related Venues</h3>
-                <div id="related-venues"></div>
-                <h3>Performers</h3>
-                <div id="performers"></div>
-            </div>
         </div>
     </div>
 
@@ -210,29 +154,84 @@
             const musicData = [
                 {
                     id: 1,
-                    title: "Alice Springs",
-                    tags: ["Rock", "Blues", "Live Music"],
+                    title: "The Rock Arena",
+                    tags: ["Rock", "Live Music", "Metal", "Blues"],
                     severity: "high",
-                    performers: ["The Rambling Turkeys", "Mik Pyro"],
+                    performers: ["The Thunder Struck", "Electric Fire"],
                     genre: "Rock"
                 },
                 {
                     id: 2,
-                    title: "Catch the Monkey",
-                    tags: ["Pop", "Jazz", "Indie"],
+                    title: "Pop Revolution",
+                    tags: ["Pop", "Indie", "Live Music"],
                     severity: "medium",
-                    performers: ["Glee Club", "Hank Half Head"],
+                    performers: ["The Neon Lights", "Summer Vibes"],
                     genre: "Pop"
                 },
                 {
                     id: 3,
-                    title: "Glee Club",
-                    tags: ["Pop", "Live Music", "Indie"],
-                    severity: "medium",
-                    performers: ["Hank Interference", "Sugar Honey"],
-                    genre: "Pop"
+                    title: "The Jazz Corner",
+                    tags: ["Jazz", "Live Music", "Soul"],
+                    severity: "low",
+                    performers: ["Smooth Sounds", "Jazz Connection"],
+                    genre: "Jazz"
                 },
-                // Additional data goes here...
+                {
+                    id: 4,
+                    title: "Indie Night",
+                    tags: ["Indie", "Rock", "Live Music"],
+                    severity: "medium",
+                    performers: ["The Side Notes", "Sunset Drive"],
+                    genre: "Indie"
+                },
+                {
+                    id: 5,
+                    title: "Funk Fusion",
+                    tags: ["Funk", "Jazz", "Soul"],
+                    severity: "medium",
+                    performers: ["Groove Masters", "Funked Up"],
+                    genre: "Funk"
+                },
+                {
+                    id: 6,
+                    title: "Classical Symphony",
+                    tags: ["Classical", "Orchestra", "Live Music"],
+                    severity: "low",
+                    performers: ["The Virtuosos", "Symphonic Orchestra"],
+                    genre: "Classical"
+                },
+                {
+                    id: 7,
+                    title: "Blues Night",
+                    tags: ["Blues", "Live Music", "Jazz"],
+                    severity: "high",
+                    performers: ["The Blues Brothers", "Soulful Strums"],
+                    genre: "Blues"
+                },
+                {
+                    id: 8,
+                    title: "The Indie Express",
+                    tags: ["Indie", "Live Music", "Pop"],
+                    severity: "medium",
+                    performers: ["The Moon Walkers", "Indie Vibes"],
+                    genre: "Indie"
+                },
+                {
+                    id: 9,
+                    title: "Electronic Beats",
+                    tags: ["Electronic", "Live Music", "Dance"],
+                    severity: "medium",
+                    performers: ["DJ Vibe", "BeatMaker"],
+                    genre: "Electronic"
+                },
+                {
+                    id: 10,
+                    title: "Acoustic Heaven",
+                    tags: ["Acoustic", "Live Music", "Folk"],
+                    severity: "low",
+                    performers: ["The Acoustic Duo", "Folk Tales"],
+                    genre: "Acoustic"
+                }
             ];
 
             const nodes = new vis.DataSet(
@@ -291,23 +290,13 @@
                 edges: {
                     width: 2,
                     color: '#BDBDBD'
-                },
-                manipulation: {
-                    enabled: true
                 }
             };
             const network = new vis.Network(container, data, options);
 
-            // Add event listeners here to update the details-panel when a node is clicked
-            network.on("click", function (event) {
-                const nodeId = event.nodes[0];
-                const node = musicData.find(item => item.id === nodeId);
-                document.getElementById("selected-title").innerText = node ? node.title : 'No venue selected';
-                document.getElementById("selected-severity").innerText = node ? `Severity: ${node.severity}` : '';
-                document.getElementById("selected-tags").innerHTML = node ? node.tags.map(tag => `<span class="tag">${tag}</span>`).join('') : '';
-                document.getElementById("performers").innerText = node ? node.performers.join(', ') : '';
-                document.getElementById("related-venues").innerText = "Related venues go here...";
-            });
+            // Update stats
+            document.getElementById("node-count").textContent = nodes.length;
+            document.getElementById("edge-count").textContent = edges.length;
         });
     </script>
 </body>
