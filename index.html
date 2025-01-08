@@ -157,6 +157,7 @@ network.moveTo({
     const toggleButton = document.querySelector(".toggle-physics-button");
     let physicsEnabled = false;
     let currentLayout = "circular";
+      const yOffset = -100; // Add an offset to raise the mandala
 
     toggleButton.addEventListener("click", function () {
       physicsEnabled = !physicsEnabled;
