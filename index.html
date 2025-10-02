@@ -3,12 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Treatment and Condition Connections</title>
+  <title>Expanded Medical Knowledge Network</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css" rel="stylesheet">
+  <script src="https://cdn.nextmind.com/nextmind.js"></script>
   <style>
-    #related-posts-graph-container {
+    body {
+      background-color: #1e1e2f;
+      color: #fff;
+      font-family: 'Arial', sans-serif;
+    }
+
+    #connections-graph-container {
       position: relative;
-      background-color: black;
+      background-color: #1e1e2f;
       margin: 0 auto;
       width: 100%;
       padding: 10px;
@@ -17,164 +24,422 @@
       align-items: center;
     }
 
-    #related-posts-graph {
+    #connections-graph {
       height: 700px;
       width: 100%;
-       margin-top: -200px; /* Raises the graph by 100px */
-}
-    
+      border: 1px solid #333;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-top: -100px;
+    }
 
-.toggle-physics-button {
-  background-color: #4a90e2;
-  color: white;
-  padding: 12px 24px;
-  border: none;
-  border-radius: 4px;
-  font-size: 18px;
-  margin: 0 auto; /* Center horizontally */
-  cursor: pointer;
-  text-align: center;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  position: sticky; /* Sticks within the viewport */
-  top: 10px; /* 10px from the top of the viewport */
-  z-index: 9999; /* Ensure it's above other elements */
-}
+    .toggle-physics-button {
+      background-color: #4a90e2;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 4px;
+      font-size: 18px;
+      margin: 20px auto;
+      cursor: pointer;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 10px;
+      z-index: 9999;
+      transition: background-color 0.3s ease;
+    }
 
+    .toggle-physics-button:hover {
+      background-color: #357abd;
+    }
 
-}
+    .toggle-physics-button:active {
+      transform: translateY(1px);
+    }
 
-
+    #nextmind-status {
+      color: #fff;
+      margin: 20px 0;
+      font-size: 18px;
+    }
   </style>
 </head>
 <body>
 
-<div id="related-posts-graph-container">
-  <button class="toggle-physics-button">Push Button</button>
-  <div id="related-posts-graph"></div>
-
+<div id="nextmind-status">NextMind Device Status: Not Connected</div>
+<div id="connections-graph-container">
+  <button class="toggle-physics-button">Toggle Physics</button>
+  <div id="connections-graph"></div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-    const treatmentsAndConditions = [
-      { id: 1, title: "Cancer", tags: ["Cancer", "Chemotherapy", "Surgery", "Cancer Treatment", "Smoking", "Genetics", "Radiation Exposure", "Environmental Toxins", "Chemicals"] },
-      { id: 2, title: "Diabetes", tags: ["Diabetes", "Insulin", "Exercise", "Diet", "Obesity", "Poor Diet", "Lack of Physical Activity", "Genetics", "High Blood Sugar"] },
-      { id: 3, title: "Heart Disease", tags: ["Heart Disease", "Cholesterol", "Blood Pressure", "Heart Attack", "High Cholesterol", "Atherosclerosis", "Surgery", "Blood Clots", "Obesity"] },
-      { id: 4, title: "Asthma", tags: ["Asthma", "Inhalers", "Wheezing", "Breathing Difficulty", "Exercise", "Allergens", "Air Pollution", "Respiratory Infections", "Genetics"] },
-      { id: 5, title: "Flu", tags: ["Flu", "Influenza", "Antiviral", "Cough", "Fever", "Chills", "Fatigue", "Body Aches", "Rest", "Dehydration"] },
-      { id: 6, title: "COVID-19", tags: ["COVID-19", "Vaccine", "Virus", "Fever", "Cough", "Shortness of Breath", "Fatigue", "Isolation", "Quarantine", "PCR Test"] },
-      { id: 7, title: "Chronic Pain", tags: ["Chronic Pain", "Pain Management", "Medication", "Nerve Damage", "Inflammation", "Back Pain", "Arthritis", "Fibromyalgia", "Stress"] },
-      { id: 8, title: "Mental Health", tags: ["Mental Health", "Anxiety", "Depression", "Therapy", "Support", "Stress", "Chemical Imbalance", "Trauma", "Cognitive Behavioral Therapy"] },
-      { id: 9, title: "Alzheimer's", tags: ["Alzheimer's", "Memory Loss", "Cognitive Decline", "Dementia", "Age", "Genetics", "Brain Plaques", "Neurodegenerative", "Forgetfulness"] },
-      { id: 10, title: "Obesity", tags: ["Obesity", "Diet", "Exercise", "Insulin Resistance", "Obesity Treatment", "Bariatric Surgery", "Metabolic Syndrome", "Fatigue"] },
-      { id: 11, title: "Stroke", tags: ["Stroke", "High Blood Pressure", "Atherosclerosis", "Blood Clots", "Rehabilitation", "Physiotherapy", "Stroke Recovery", "Speech Therapy"] },
-      { id: 12, title: "Kidney Disease", tags: ["Kidney Disease", "Dialysis", "Transplant", "High Blood Pressure", "Diabetes", "Chronic Kidney Disease", "Genetics", "Kidney Function"] },
-      { id: 13, title: "Sleep Disorders", tags: ["Sleep Apnea", "Insomnia", "Restless Legs Syndrome", "CPAP", "Sleep Hygiene", "Fatigue", "Medication", "Stress"] },
-      { id: 14, title: "Lung Diseases", tags: ["COPD", "Asthma", "Chronic Bronchitis", "Pulmonary Fibrosis", "Lung Cancer", "Smoking", "Air Pollution", "Breathing Difficulty"] },
-      { id: 15, title: "Parkinson's Disease", tags: ["Parkinson's", "Tremors", "Shuffling Walk", "Bradykinesia", "Motor Symptoms", "Dopamine", "Medication", "Exercise Therapy"] },
-      { id: 16, title: "Liver Disease", tags: ["Hepatitis", "Cirrhosis", "Fatty Liver Disease", "Liver Cancer", "Alcohol Abuse", "Hepatitis B and C", "Liver Transplant", "Genetics"] },
-      { id: 17, title: "Rheumatoid Arthritis", tags: ["Rheumatoid Arthritis", "Joint Pain", "Inflammation", "Immune System", "Medication", "Physical Therapy", "Chronic Pain", "Fatigue"] },
-      { id: 18, title: "Epilepsy", tags: ["Epilepsy", "Seizures", "Neurology", "Medication", "Brain Disorder", "Anticonvulsants", "Genetics"] },
-      { id: 19, title: "Multiple Sclerosis", tags: ["Multiple Sclerosis", "Nerve Damage", "Immune System", "Fatigue", "Balance Issues", "Physical Therapy", "Pain Management", "Relapse Remitting"] },
-      { id: 20, title: "Chronic Fatigue Syndrome", tags: ["Chronic Fatigue", "Fatigue", "Sleep Disorders", "Mental Fog", "Pain Management", "Exercise Therapy", "Stress"] },
-      { id: 21, title: "Thyroid Disorders", tags: ["Hypothyroidism", "Hyperthyroidism", "Thyroid Cancer", "T3/T4 Hormones", "Medication", "Fatigue", "Weight Gain/Loss"] },
-      { id: 22, title: "HIV/AIDS", tags: ["HIV", "AIDS", "Immunodeficiency", "Viral Infection", "Antiretroviral Therapy", "Prevention", "Opportunistic Infections"] },
-      { id: 23, title: "Tuberculosis", tags: ["Tuberculosis", "Mycobacterium Tuberculosis", "Chest Pain", "Cough", "Night Sweats", "Antibiotics", "Infection", "Pulmonary"] },
-      { id: 24, title: "Malaria", tags: ["Malaria", "Parasite", "Mosquito Bites", "Fever", "Chills", "Antimalarial Drugs", "Prevention", "Tropical Diseases"] },
-      { id: 25, title: "Hepatitis B", tags: ["Hepatitis B", "Liver Infection", "Jaundice", "Liver Damage", "Vaccine", "Antiviral Drugs", "Chronic Hepatitis"] },
-      { id: 26, title: "Gastroesophageal Reflux Disease (GERD)", tags: ["GERD", "Acid Reflux", "Heartburn", "Esophageal Damage", "Medications", "Antacids", "Lifestyle Changes"] },
-      { id: 27, title: "Celiac Disease", tags: ["Celiac Disease", "Gluten Sensitivity", "Diarrhea", "Weight Loss", "Bloating", "Autoimmune Disorder", "Dietary Changes"] },
-      { id: 28, title: "Chronic Bronchitis", tags: ["Chronic Bronchitis", "Cough", "Mucus", "COPD", "Smoking", "Air Pollution", "Respiratory Infections", "Medication"] },
-      { id: 29, title: "Psoriasis", tags: ["Psoriasis", "Skin Rash", "Red Patches", "Itchy Skin", "Autoimmune", "Topical Treatment", "Steroids", "UV Therapy"] },
-      { id: 30, title: "Gout", tags: ["Gout", "Joint Pain", "Uric Acid", "Medication", "Inflammation", "Dietary Triggers", "Dehydration", "Kidney Disease"] },
-      { id: 31, title: "Osteoporosis", tags: ["Osteoporosis", "Bone Density", "Bone Fractures", "Calcium", "Vitamin D", "Bone Health", "Weight-bearing Exercise"] }
+    const items = [
+      // Infectious Diseases
+      { id: 1, title: "Influenza", type: "Disease", tags: ["Virus", "Respiratory System", "Vaccination", "Antiviral Drugs", "Hygiene"] },
+      { id: 2, title: "COVID-19", type: "Disease", tags: ["Virus", "Respiratory System", "Cardiovascular System", "Vaccination", "Antiviral Drugs", "Hygiene"] },
+      { id: 3, title: "Tuberculosis", type: "Disease", tags: ["Bacteria", "Respiratory System", "Antibiotics", "Vaccination"] },
+      { id: 4, title: "HIV/AIDS", type: "Disease", tags: ["Virus", "Immune System", "Antiretroviral Therapy", "Safe Sex"] },
+      { id: 5, title: "Malaria", type: "Disease", tags: ["Parasite", "Blood", "Antimalarial Drugs", "Mosquito Nets"] },
+      { id: 6, title: "Common Cold", type: "Disease", tags: ["Virus", "Respiratory System", "Hygiene", "Rest", "Hydration"] },
+      { id: 7, title: "Measles", type: "Disease", tags: ["Virus", "Skin", "Respiratory System", "Vaccination"] },
+      { id: 8, title: "Strep Throat", type: "Disease", tags: ["Bacteria", "Respiratory System", "Antibiotics"] },
+      { id: 9, title: "Pneumonia", type: "Disease", tags: ["Bacteria", "Virus", "Fungi", "Respiratory System", "Antibiotics", "Antiviral Drugs"] },
+      { id: 10, title: "Urinary Tract Infection", type: "Disease", tags: ["Bacteria", "Urinary System", "Antibiotics", "Hydration"] },
+      { id: 11, title: "Athlete's Foot", type: "Disease", tags: ["Fungi", "Skin", "Antifungal Medication", "Hygiene"] },
+      { id: 12, title: "Ringworm", type: "Disease", tags: ["Fungi", "Skin", "Antifungal Medication"] },
+      { id: 13, title: "Candidiasis", type: "Disease", tags: ["Fungi", "Skin", "Reproductive System", "Antifungal Medication"] },
+      { id: 14, title: "Giardiasis", type: "Disease", tags: ["Parasite", "Gastrointestinal System", "Anti-parasitic Drugs", "Clean Water"] },
+      { id: 15, title: "Scabies", type: "Disease", tags: ["Parasite", "Skin", "Topical Medications"] },
+
+      // Cardiovascular Diseases
+      { id: 16, title: "Hypertension", type: "Disease", tags: ["Cardiovascular System", "Diet", "Exercise", "Medication", "Genetics", "Stress Management"] },
+      { id: 17, title: "Coronary Artery Disease", type: "Disease", tags: ["Cardiovascular System", "Cholesterol", "Diet", "Exercise", "Statins", "Surgery"] },
+      { id: 18, title: "Heart Failure", type: "Disease", tags: ["Cardiovascular System", "Hypertension", "Medication", "Lifestyle Changes"] },
+      { id: 19, title: "Stroke", type: "Disease", tags: ["Nervous System", "Cardiovascular System", "Blood Clots", "Physical Therapy", "Medication"] },
+      { id: 20, title: "Arrhythmia", type: "Disease", tags: ["Cardiovascular System", "Medication", "Pacemaker"] },
+
+      // Respiratory Diseases
+      { id: 21, title: "Asthma", type: "Disease", tags: ["Respiratory System", "Allergens", "Inhalers", "Trigger Avoidance"] },
+      { id: 22, title: "COPD", type: "Disease", tags: ["Respiratory System", "Smoking", "Inhalers", "Oxygen Therapy", "Smoking Cessation"] },
+      { id: 23, title: "Bronchitis", type: "Disease", tags: ["Respiratory System", "Virus", "Bacteria", "Rest", "Hydration"] },
+      { id: 24, title: "Allergic Rhinitis", type: "Disease", tags: ["Respiratory System", "Immune System", "Allergens", "Antihistamines"] },
+
+      // Gastrointestinal Diseases
+      { id: 25, title: "GERD", type: "Disease", tags: ["Gastrointestinal System", "Diet", "Medication", "Lifestyle Changes"] },
+      { id: 26, title: "IBS", type: "Disease", tags: ["Gastrointestinal System", "Diet", "Stress Management", "Medication"] },
+      { id: 27, title: "Crohn's Disease", type: "Disease", tags: ["Gastrointestinal System", "Immune System", "Anti-inflammatory Drugs", "Immunosuppressants"] },
+      { id: 28, title: "Ulcerative Colitis", type: "Disease", tags: ["Gastrointestinal System", "Immune System", "Anti-inflammatory Drugs", "Immunosuppressants"] },
+      { id: 29, title: "Gastroenteritis", type: "Disease", tags: ["Gastrointestinal System", "Virus", "Bacteria", "Hydration", "Rest"] },
+
+      // Neurological Disorders
+      { id: 30, title: "Migraine", type: "Disease", tags: ["Nervous System", "Pain Relievers", "Trigger Avoidance"] },
+      { id: 31, title: "Alzheimer's Disease", type: "Disease", tags: ["Nervous System", "Genetics", "Cognitive Therapy", "Medication"] },
+      { id: 32, title: "Parkinson's Disease", type: "Disease", tags: ["Nervous System", "Medication", "Physical Therapy"] },
+      { id: 33, title: "Epilepsy", type: "Disease", tags: ["Nervous System", "Anticonvulsant Drugs"] },
+      { id: 34, title: "Multiple Sclerosis", type: "Disease", tags: ["Nervous System", "Immune System", "Immunosuppressants", "Physical Therapy"] },
+
+      // Endocrine Disorders
+      { id: 35, title: "Type 1 Diabetes", type: "Disease", tags: ["Endocrine System", "Immune System", "Insulin Therapy"] },
+      { id: 36, title: "Type 2 Diabetes", type: "Disease", tags: ["Endocrine System", "Diet", "Exercise", "Medication", "Insulin Therapy"] },
+      { id: 37, title: "Hypothyroidism", type: "Disease", tags: ["Endocrine System", "Hormone Replacement Therapy"] },
+      { id: 38, title: "Hyperthyroidism", type: "Disease", tags: ["Endocrine System", "Medication", "Radiation Therapy"] },
+      { id: 39, title: "PCOS", type: "Disease", tags: ["Endocrine System", "Reproductive System", "Lifestyle Changes", "Medication"] },
+
+      // Musculoskeletal Disorders
+      { id: 40, title: "Osteoarthritis", type: "Disease", tags: ["Musculoskeletal System", "Pain Relievers", "Physical Therapy"] },
+      { id: 41, title: "Rheumatoid Arthritis", type: "Disease", tags: ["Musculoskeletal System", "Immune System", "Anti-inflammatory Drugs", "Immunosuppressants"] },
+      { id: 42, title: "Osteoporosis", type: "Disease", tags: ["Musculoskeletal System", "Diet", "Exercise", "Medication"] },
+      { id: 43, title: "Fibromyalgia", type: "Disease", tags: ["Musculoskeletal System", "Nervous System", "Pain Relievers", "Exercise", "Stress Management"] },
+      { id: 44, title: "Low Back Pain", type: "Disease", tags: ["Musculoskeletal System", "Physical Therapy", "Pain Relievers"] },
+
+      // Cancers
+      { id: 45, title: "Lung Cancer", type: "Disease", tags: ["Respiratory System", "Smoking", "Chemotherapy", "Radiation Therapy", "Surgery", "Carcinogens"] },
+      { id: 46, title: "Breast Cancer", type: "Disease", tags: ["Reproductive System", "Genetics", "Chemotherapy", "Radiation Therapy", "Surgery"] },
+      { id: 47, title: "Prostate Cancer", type: "Disease", tags: ["Reproductive System", "Genetics", "Surgery", "Radiation Therapy"] },
+      { id: 48, title: "Colorectal Cancer", type: "Disease", tags: ["Gastrointestinal System", "Diet", "Surgery", "Chemotherapy"] },
+      { id: 49, title: "Skin Cancer", type: "Disease", tags: ["Skin", "UV Radiation", "Sunscreen", "Surgery"] },
+
+      // Mental Health Conditions
+      { id: 50, title: "Depression", type: "Disease", tags: ["Nervous System", "Psychotherapy", "Antidepressants"] },
+      { id: 51, title: "Anxiety Disorders", type: "Disease", tags: ["Nervous System", "Psychotherapy", "Medication"] },
+      { id: 52, title: "Bipolar Disorder", type: "Disease", tags: ["Nervous System", "Mood Stabilizers", "Psychotherapy"] },
+      { id: 53, title: "Schizophrenia", type: "Disease", tags: ["Nervous System", "Antipsychotic Drugs", "Psychotherapy"] },
+      { id: 54, title: "OCD", type: "Disease", tags: ["Nervous System", "Psychotherapy", "Antidepressants"] },
+
+      // Skin Conditions
+      { id: 55, title: "Acne", type: "Disease", tags: ["Skin", "Topical Medications", "Hygiene"] },
+      { id: 56, title: "Eczema", type: "Disease", tags: ["Skin", "Immune System", "Moisturizers", "Topical Steroids"] },
+      { id: 57, title: "Psoriasis", type: "Disease", tags: ["Skin", "Immune System", "Topical Medications", "Light Therapy"] },
+      { id: 58, title: "Rosacea", type: "Disease", tags: ["Skin", "Topical Medications", "Trigger Avoidance"] },
+      { id: 59, title: "Hives", type: "Disease", tags: ["Skin", "Immune System", "Antihistamines", "Allergens"] },
+
+      // Additional Diseases
+      { id: 60, title: "Chronic Kidney Disease", type: "Disease", tags: ["Urinary System", "Hypertension", "Diet", "Exercise", "Medication"] },
+      { id: 61, title: "Hepatitis B", type: "Disease", tags: ["Virus", "Gastrointestinal System", "Vaccination", "Antiviral Drugs"] },
+      { id: 62, title: "Hepatitis C", type: "Disease", tags: ["Virus", "Gastrointestinal System", "Antiviral Drugs"] },
+      { id: 63, title: "Cystic Fibrosis", type: "Disease", tags: ["Genetics", "Respiratory System", "Gastrointestinal System", "Antibiotics", "Physical Therapy"] },
+      { id: 64, title: "Dementia", type: "Disease", tags: ["Nervous System", "Genetics", "Cognitive Therapy", "Medication"] },
+      { id: 65, title: "Chronic Pain", type: "Disease", tags: ["Nervous System", "Musculoskeletal System", "Pain Relievers", "Physical Therapy", "Stress Management"] },
+      { id: 66, title: "Atrial Fibrillation", type: "Disease", tags: ["Cardiovascular System", "Medication", "Pacemaker"] },
+      { id: 67, title: "Endometriosis", type: "Disease", tags: ["Reproductive System", "Pain Relievers", "Hormone Replacement Therapy", "Surgery"] },
+      { id: 68, title: "Childhood Constipation", type: "Disease", tags: ["Gastrointestinal System", "Diet", "Hydration", "Medication"] },
+      { id: 69, title: "Chronic Fatigue Syndrome", type: "Disease", tags: ["Nervous System", "Immune System", "Rest", "Exercise", "Cognitive Therapy"] },
+      { id: 70, title: "Ankylosing Spondylitis", type: "Disease", tags: ["Musculoskeletal System", "Immune System", "Anti-inflammatory Drugs", "Physical Therapy"] },
+      { id: 71, title: "Lupus", type: "Disease", tags: ["Immune System", "Skin", "Musculoskeletal System", "Anti-inflammatory Drugs", "Immunosuppressants"] },
+      { id: 72, title: "Sickle Cell Disease", type: "Disease", tags: ["Genetics", "Blood", "Pain Relievers", "Hydration", "Medication"] },
+      { id: 73, title: "Obesity", type: "Disease", tags: ["Endocrine System", "Diet", "Exercise", "Lifestyle Changes"] },
+      { id: 74, title: "Obstructive Sleep Apnoea", type: "Disease", tags: ["Respiratory System", "Lifestyle Changes", "Medication", "Surgery"] },
+      { id: 75, title: "Autism", type: "Disease", tags: ["Nervous System", "Genetics", "Cognitive Therapy", "Psychotherapy"] },
+      { id: 76, title: "ADHD", type: "Disease", tags: ["Nervous System", "Medication", "Psychotherapy", "Lifestyle Changes"] },
+      { id: 77, title: "Addiction", type: "Disease", tags: ["Nervous System", "Psychotherapy", "Medication", "Stress Management"] },
+      { id: 78, title: "Anemia", type: "Disease", tags: ["Blood", "Diet", "Medication"] },
+      { id: 79, title: "Angina", type: "Disease", tags: ["Cardiovascular System", "Medication", "Lifestyle Changes", "Surgery"] },
+      { id: 80, title: "Cerebral Palsy", type: "Disease", tags: ["Nervous System", "Musculoskeletal System", "Physical Therapy"] },
+      { id: 81, title: "Pancreatic Cancer", type: "Disease", tags: ["Gastrointestinal System", "Smoking", "Chemotherapy", "Radiation Therapy", "Surgery"] },
+      { id: 82, title: "Leukemia", type: "Disease", tags: ["Blood", "Chemotherapy", "Radiation Therapy"] },
+      { id: 83, title: "Lymphoma", type: "Disease", tags: ["Immune System", "Chemotherapy", "Radiation Therapy"] },
+      { id: 84, title: "Thyroid Cancer", type: "Disease", tags: ["Endocrine System", "Surgery", "Radiation Therapy"] },
+      { id: 85, title: "Ovarian Cancer", type: "Disease", tags: ["Reproductive System", "Genetics", "Chemotherapy", "Surgery"] },
+      { id: 86, title: "PTSD", type: "Disease", tags: ["Nervous System", "Psychotherapy", "Antidepressants"] },
+      { id: 87, title: "Personality Disorder", type: "Disease", tags: ["Nervous System", "Psychotherapy", "Medication"] },
+      { id: 88, title: "Vitiligo", type: "Disease", tags: ["Skin", "Immune System", "Topical Medications", "Light Therapy"] },
+      { id: 89, title: "Alopecia", type: "Disease", tags: ["Skin", "Immune System", "Topical Medications"] },
+      { id: 90, title: "Ebola", type: "Disease", tags: ["Virus", "Hygiene", "Vaccination"] },
+      { id: 91, title: "Zika", type: "Disease", tags: ["Virus", "Mosquito Nets"] },
+      { id: 92, title: "Dengue", type: "Disease", tags: ["Virus", "Mosquito Nets"] },
+      { id: 93, title: "Avian Influenza", type: "Disease", tags: ["Virus", "Respiratory System", "Hygiene"] },
+      { id: 94, title: "Botulism", type: "Disease", tags: ["Bacteria", "Gastrointestinal System", "Medication"] },
+      { id: 95, title: "Legionnaires' Disease", type: "Disease", tags: ["Bacteria", "Respiratory System", "Antibiotics"] },
+      { id: 96, title: "Mpox", type: "Disease", tags: ["Virus", "Skin", "Vaccination", "Antiviral Drugs"] },
+      { id: 97, title: "Norovirus", type: "Disease", tags: ["Virus", "Gastrointestinal System", "Hygiene", "Hydration"] },
+      { id: 98, title: "Pertussis", type: "Disease", tags: ["Bacteria", "Respiratory System", "Vaccination", "Antibiotics"] },
+      { id: 99, title: "Rabies", type: "Disease", tags: ["Virus", "Nervous System", "Vaccination"] },
+      { id: 100, title: "Salmonella", type: "Disease", tags: ["Bacteria", "Gastrointestinal System", "Hygiene", "Antibiotics"] },
+      { id: 101, title: "Tetanus", type: "Disease", tags: ["Bacteria", "Musculoskeletal System", "Vaccination", "Antibiotics"] },
+      { id: 102, title: "West Nile Virus", type: "Disease", tags: ["Virus", "Nervous System", "Mosquito Nets"] },
+      { id: 103, title: "Coeliac Disease", type: "Disease", tags: ["Gastrointestinal System", "Immune System", "Diet"] },
+      { id: 104, title: "Gout", type: "Disease", tags: ["Musculoskeletal System", "Diet", "Anti-inflammatory Drugs"] },
+      { id: 105, title: "Haemophilia", type: "Disease", tags: ["Genetics", "Blood", "Medication"] },
+      { id: 106, title: "Motor Neurone Disease", type: "Disease", tags: ["Nervous System", "Physical Therapy", "Medication"] },
+      { id: 107, title: "Sarcoidosis", type: "Disease", tags: ["Immune System", "Respiratory System", "Anti-inflammatory Drugs"] },
+      { id: 108, title: "Spina Bifida", type: "Disease", tags: ["Nervous System", "Genetics", "Surgery", "Physical Therapy"] },
+      { id: 109, title: "Urinary Incontinence", type: "Disease", tags: ["Urinary System", "Physical Therapy", "Medication", "Surgery"] },
+      { id: 110, title: "Eating Disorder", type: "Disease", tags: ["Nervous System", "Psychotherapy", "Diet"] },
+      { id: 111, title: "Phobia", type: "Disease", tags: ["Nervous System", "Psychotherapy"] },
+      { id: 112, title: "Amnesia", type: "Disease", tags: ["Nervous System", "Cognitive Therapy"] },
+      { id: 113, title: "Ataxia", type: "Disease", tags: ["Nervous System", "Physical Therapy"] },
+      { id: 114, title: "Burn Injury", type: "Disease", tags: ["Skin", "Surgery", "Physical Therapy"] },
+      { id: 115, title: "Peripheral Vascular Disease", type: "Disease", tags: ["Cardiovascular System", "Smoking", "Exercise", "Surgery"] },
+      { id: 116, title: "Progressive Supranuclear Palsy", type: "Disease", tags: ["Nervous System", "Physical Therapy"] },
+      { id: 117, title: "Muscular Dystrophy", type: "Disease", tags: ["Musculoskeletal System", "Genetics", "Physical Therapy"] },
+      { id: 118, title: "Lung Fibrosis", type: "Disease", tags: ["Respiratory System", "Oxygen Therapy", "Medication"] },
+      { id: 119, title: "Angioedema", type: "Disease", tags: ["Immune System", "Skin", "Antihistamines"] },
+      { id: 120, title: "Urticaria", type: "Disease", tags: ["Skin", "Immune System", "Antihistamines"] },
+      { id: 121, title: "Allergy", type: "Disease", tags: ["Immune System", "Allergens", "Antihistamines", "Trigger Avoidance"] },
+      { id: 122, title: "Brain Injury", type: "Disease", tags: ["Nervous System", "Physical Therapy", "Cognitive Therapy"] },
+      { id: 123, title: "Congestive Heart Failure", type: "Disease", tags: ["Cardiovascular System", "Medication", "Lifestyle Changes"] },
+      { id: 124, title: "Sleep Disorder", type: "Disease", tags: ["Nervous System", "Lifestyle Changes", "Medication"] },
+      { id: 125, title: "Amputation", type: "Disease", tags: ["Musculoskeletal System", "Surgery", "Physical Therapy"] },
+      { id: 126, title: "Dyslexia", type: "Disease", tags: ["Nervous System", "Cognitive Therapy"] },
+      { id: 127, title: "Medically Unexplained Symptoms", type: "Disease", tags: ["Nervous System", "Psychotherapy", "Stress Management"] },
+      { id: 128, title: "Occupational Lung Disease", type: "Disease", tags: ["Respiratory System", "Trigger Avoidance", "Medication"] },
+      { id: 129, title: "Multimorbidity", type: "Disease", tags: ["Lifestyle Changes", "Medication"] },
+      { id: 130, title: "Sjögren's Syndrome", type: "Disease", tags: ["Immune System", "Moisturizers", "Medication"] },
+      { id: 131, title: "Connective Tissue Disease", type: "Disease", tags: ["Immune System", "Anti-inflammatory Drugs"] },
+      { id: 132, title: "Learning Disability", type: "Disease", tags: ["Nervous System", "Cognitive Therapy"] },
+      { id: 133, title: "Spinal Injury", type: "Disease", tags: ["Nervous System", "Musculoskeletal System", "Physical Therapy"] },
+      { id: 134, title: "Transient Ischaemic Attack", type: "Disease", tags: ["Cardiovascular System", "Nervous System", "Medication"] },
+      { id: 135, title: "Bronchopulmonary Dysplasia", type: "Disease", tags: ["Respiratory System", "Oxygen Therapy"] },
+      { id: 136, title: "Dizziness", type: "Disease", tags: ["Nervous System", "Medication"] },
+      { id: 137, title: "Aphasia", type: "Disease", tags: ["Nervous System", "Cognitive Therapy"] },
+      { id: 138, title: "Speech Deficit", type: "Disease", tags: ["Nervous System", "Cognitive Therapy"] },
+      { id: 139, title: "Sensory Disability", type: "Disease", tags: ["Nervous System", "Physical Therapy"] },
+      { id: 140, title: "Rare Genetic Disorder", type: "Disease", tags: ["Genetics", "Medication"] },
+      { id: 141, title: "Polio", type: "Disease", tags: ["Virus", "Nervous System", "Vaccination"] },
+      { id: 142, title: "Hand, Foot, and Mouth Disease", type: "Disease", tags: ["Virus", "Skin", "Respiratory System", "Hygiene"] },
+      { id: 143, title: "Sickle Cell Anemia", type: "Disease", tags: ["Genetics", "Blood", "Pain Relievers"] },
+      { id: 144, title: "Carpal Tunnel Syndrome", type: "Disease", tags: ["Musculoskeletal System", "Nervous System", "Surgery", "Physical Therapy"] },
+      { id: 145, title: "Dental Health Issues", type: "Disease", tags: ["Gastrointestinal System", "Hygiene"] },
+      { id: 146, title: "Ear Infection", type: "Disease", tags: ["Bacteria", "Virus", "Antibiotics"] },
+      { id: 147, title: "Lyme Disease", type: "Disease", tags: ["Bacteria", "Antibiotics"] },
+      { id: 148, title: "Gonorrhea", type: "Disease", tags: ["Bacteria", "Reproductive System", "Antibiotics", "Safe Sex"] },
+      { id: 149, title: "Syphilis", type: "Disease", tags: ["Bacteria", "Reproductive System", "Antibiotics", "Safe Sex"] },
+      { id: 150, title: "Chlamydia", type: "Disease", tags: ["Bacteria", "Reproductive System", "Antibiotics", "Safe Sex"] },
+      { id: 151, title: "Cancer", type: "Disease", tags: ["Genetics", "Carcinogens", "Chemotherapy", "Radiation Therapy", "Surgery"] },
+      { id: 152, title: "Mood Disorder", type: "Disease", tags: ["Nervous System", "Mood Stabilizers", "Psychotherapy"] },
+      { id: 153, title: "Neuralgia", type: "Disease", tags: ["Nervous System", "Pain Relievers"] },
+      { id: 154, title: "Cardiac Arrhythmia", type: "Disease", tags: ["Cardiovascular System", "Medication", "Pacemaker"] },
+      { id: 155, title: "Inflammatory Bowel Disease", type: "Disease", tags: ["Gastrointestinal System", "Immune System", "Anti-inflammatory Drugs"] },
+      { id: 156, title: "Irritable Bowel Syndrome", type: "Disease", tags: ["Gastrointestinal System", "Diet", "Stress Management"] },
+      { id: 157, title: "Congenital Heart Defect", type: "Disease", tags: ["Genetics", "Cardiovascular System", "Surgery"] },
+      { id: 158, title: "Down Syndrome", type: "Disease", tags: ["Genetics", "Cognitive Therapy", "Physical Therapy"] },
+      { id: 159, title: "Thalassemia", type: "Disease", tags: ["Genetics", "Blood", "Medication"] },
+      { id: 160, title: "Addison's Disease", type: "Disease", tags: ["Endocrine System", "Hormone Replacement Therapy"] },
+
+      // Categories (kept the same, as expanding diseases uses existing tags)
+      { id: 201, title: "Virus", type: "Cause" },
+      { id: 202, title: "Bacteria", type: "Cause" },
+      { id: 203, title: "Fungi", type: "Cause" },
+      { id: 204, title: "Parasite", type: "Cause" },
+      { id: 205, title: "Genetics", type: "Cause" },
+      { id: 206, title: "Diet", type: "Cause" },
+      { id: 207, title: "Allergens", type: "Cause" },
+      { id: 208, title: "Carcinogens", type: "Cause" },
+      { id: 209, title: "Smoking", type: "Cause" },
+      { id: 210, title: "Cholesterol", type: "Cause" },
+      { id: 211, title: "Blood Clots", type: "Cause" },
+      { id: 212, title: "UV Radiation", type: "Cause" },
+
+      { id: 301, title: "Vaccination", type: "Prevention" },
+      { id: 302, title: "Hygiene", type: "Prevention" },
+      { id: 303, title: "Safe Sex", type: "Prevention" },
+      { id: 304, title: "Mosquito Nets", type: "Prevention" },
+      { id: 305, title: "Exercise", type: "Prevention" },
+      { id: 306, title: "Trigger Avoidance", type: "Prevention" },
+      { id: 307, title: "Stress Management", type: "Prevention" },
+      { id: 308, title: "Smoking Cessation", type: "Prevention" },
+      { id: 309, title: "Clean Water", type: "Prevention" },
+      { id: 310, title: "Sunscreen", type: "Prevention" },
+
+      { id: 401, title: "Antiviral Drugs", type: "Treatment" },
+      { id: 402, title: "Antibiotics", type: "Treatment" },
+      { id: 403, title: "Antiretroviral Therapy", type: "Treatment" },
+      { id: 404, title: "Antimalarial Drugs", type: "Treatment" },
+      { id: 405, title: "Medication", type: "Treatment" },
+      { id: 406, title: "Insulin Therapy", type: "Treatment" },
+      { id: 407, title: "Inhalers", type: "Treatment" },
+      { id: 408, title: "Cognitive Therapy", type: "Treatment" },
+      { id: 409, title: "Chemotherapy", type: "Treatment" },
+      { id: 410, title: "Radiation Therapy", type: "Treatment" },
+      { id: 411, title: "Surgery", type: "Treatment" },
+      { id: 412, title: "Antifungal Medication", type: "Treatment" },
+      { id: 413, title: "Anti-parasitic Drugs", type: "Treatment" },
+      { id: 414, title: "Topical Medications", type: "Treatment" },
+      { id: 415, title: "Statins", type: "Treatment" },
+      { id: 416, title: "Physical Therapy", type: "Treatment" },
+      { id: 417, title: "Pacemaker", type: "Treatment" },
+      { id: 418, title: "Oxygen Therapy", type: "Treatment" },
+      { id: 419, title: "Antihistamines", type: "Treatment" },
+      { id: 420, title: "Anti-inflammatory Drugs", type: "Treatment" },
+      { id: 421, title: "Immunosuppressants", type: "Treatment" },
+      { id: 422, title: "Pain Relievers", type: "Treatment" },
+      { id: 423, title: "Anticonvulsant Drugs", type: "Treatment" },
+      { id: 424, title: "Hormone Replacement Therapy", type: "Treatment" },
+      { id: 425, title: "Psychotherapy", type: "Treatment" },
+      { id: 426, title: "Antidepressants", type: "Treatment" },
+      { id: 427, title: "Mood Stabilizers", type: "Treatment" },
+      { id: 428, title: "Antipsychotic Drugs", type: "Treatment" },
+      { id: 429, title: "Moisturizers", type: "Treatment" },
+      { id: 430, title: "Topical Steroids", type: "Treatment" },
+      { id: 431, title: "Light Therapy", type: "Treatment" },
+      { id: 432, title: "Rest", type: "Treatment" },
+      { id: 433, title: "Hydration", type: "Treatment" },
+      { id: 434, title: "Lifestyle Changes", type: "Treatment" },
+
+      { id: 501, title: "Respiratory System", type: "Anatomy" },
+      { id: 502, title: "Immune System", type: "Anatomy" },
+      { id: 503, title: "Blood", type: "Anatomy" },
+      { id: 504, title: "Cardiovascular System", type: "Anatomy" },
+      { id: 505, title: "Endocrine System", type: "Anatomy" },
+      { id: 506, title: "Nervous System", type: "Anatomy" },
+      { id: 507, title: "Skin", type: "Anatomy" },
+      { id: 508, title: "Urinary System", type: "Anatomy" },
+      { id: 509, title: "Gastrointestinal System", type: "Anatomy" },
+      { id: 510, title: "Reproductive System", type: "Anatomy" },
+      { id: 511, title: "Musculoskeletal System", type: "Anatomy" }
     ];
 
     const nodes = new vis.DataSet([]);
     const edges = new vis.DataSet([]);
     const nodeConnections = {};
 
-    treatmentsAndConditions.forEach(condition => {
-      const conditionNode = {
-        id: condition.id,
-        label: condition.title,
-        title: `<h3>${condition.title}</h3><ul>${condition.tags.map(tag => `<li>${tag}</li>`).join('')}</ul>`,
-        group: "condition",
-        size: condition.tags.length * 3
+    const groups = {
+      Disease: { color: { background: '#ff6961', border: '#c34a44' } },
+      Cause: { color: { background: '#ffb347', border: '#c88736' } },
+      Prevention: { color: { background: '#77dd77', border: '#5cb35c' } },
+      Treatment: { color: { background: '#aec6cf', border: '#869ca3' } },
+      Anatomy: { color: { background: '#fdfd96', border: '#c4c475' } }
+    };
+
+    items.forEach(item => {
+      const itemNode = {
+        id: item.id,
+        label: item.title,
+        title: `<h3>${item.title}</h3><ul>${(item.tags || []).map(tag => `<li>${tag}</li>`).join('')}</ul>`,
+        group: item.type,
+        font: { color: '#ffffff' }
       };
-      nodes.add(conditionNode);
+      nodes.add(itemNode);
 
-      condition.tags.forEach(tag => {
-        const tagNode = nodes.get(tag);
+      (item.tags || []).forEach(tag => {
+        let tagNode = nodes.get({ filter: n => n.label === tag })[0];
         if (!tagNode) {
-          nodes.add({ id: tag, label: tag, group: "tag" });
+          const matchingItem = items.find(i => i.title === tag);
+          tagNode = {
+            id: tag,
+            label: tag,
+            group: matchingItem ? matchingItem.type : "Anatomy",
+            font: { color: '#ffffff' }
+          };
+          nodes.add(tagNode);
         }
-        edges.add({ from: condition.id, to: tag });
+        edges.add({ from: item.id, to: tagNode.id, color: { color: '#666666', highlight: '#999999' } });
 
-        nodeConnections[tag] = (nodeConnections[tag] || 0) + 1;
-        nodeConnections[condition.id] = (nodeConnections[condition.id] || 0) + 1;
+        nodeConnections[tagNode.id] = (nodeConnections[tagNode.id] || 0) + 1;
+        nodeConnections[item.id] = (nodeConnections[item.id] || 0) + 1;
       });
     });
 
     nodes.forEach(node => {
       const connectionCount = nodeConnections[node.id] || 0;
-      node.size = connectionCount * 3;
+      node.size = Math.max(10, connectionCount * 2);
       nodes.update(node);
     });
 
-    const container = document.getElementById("related-posts-graph");
+    const container = document.getElementById("connections-graph");
     const data = { nodes: nodes, edges: edges };
+
     const options = {
-  nodes: {
-    shape: 'dot',
-    font: { size: 16 },
-  },
-  physics: {
-    enabled: false,
-    solver: 'forceAtlas2Based',
-  },
-  interaction: {
-    hover: true,
-    zoomView: true,  // Enables zoom
-    zoomSpeed: 0.5,  // Adjust zoom speed (0.5 is slower, making the zoom less aggressive)
-    initialScale: 0.2,  // Set the initial zoom level (0.5 is 50% zoomed out)
-  },
-  layout: {
-    randomSeed: 2,
-    hierarchical: false,
-    improvedLayout: false,
-    circular: true,
-  },
-};
+      nodes: {
+        shape: 'dot',
+        font: { size: 14 },
+        scaling: { min: 10, max: 25 }
+      },
+      edges: {
+        width: 1,
+        smooth: { type: 'continuous' }
+      },
+      physics: {
+        enabled: true,
+        solver: 'forceAtlas2Based',
+        forceAtlas2Based: {
+          gravitationalConstant: -50,
+          centralGravity: 0.005,
+          springLength: 100,
+          springConstant: 0.08
+        },
+        stabilization: { iterations: 150 }
+      },
+      interaction: {
+        hover: true,
+        zoomView: true,
+        dragView: true,
+        dragNodes: true,
+        zoomSpeed: 0.5,
+        tooltipDelay: 300
+      },
+      groups: groups
+    };
 
-   const network = new vis.Network(container, data, options);
-
-// Set initial zoom and position
-network.moveTo({
-  position: { x: 0, y: 0 }, // Center of the graph
-  scale: .3, // Adjust zoom level (1.5x zoom in this example)
-});
+    const network = new vis.Network(container, data, options);
 
     const toggleButton = document.querySelector(".toggle-physics-button");
-    let physicsEnabled = false;
-    let currentLayout = "circular";
-      const yOffset = -100; // Add an offset to raise the mandala
-
-    toggleButton.addEventListener("click", function () {
-      physicsEnabled = !physicsEnabled;
-      options.physics.enabled = physicsEnabled;
-      if (currentLayout === "circular") {
-        options.layout.randomSeed = 2;
-        options.layout.circular = false;
-        currentLayout = "random";
-      } else {
-        options.layout.randomSeed = 2;
-        options.layout.circular = true;
-        currentLayout = "circular";
-      }
+    toggleButton.addEventListener("click", function() {
+      options.physics.enabled = !options.physics.enabled;
       network.setOptions(options);
-      toggleButton.textContent = physicsEnabled ? "Disable Physics" : "Enable Physics";
+    });
+
+    const nextMindStatusElement = document.getElementById("nextmind-status");
+
+    function updateNextMindStatus(status) {
+      nextMindStatusElement.textContent = `NextMind Device Status: ${status === "connected" ? "Connected" : "Not Connected"}`;
+    }
+
+    NextMind.start({
+      onConnected: () => {
+        updateNextMindStatus("connected");
+        NextMind.on('input', (event) => {
+          if (event.action === 'button') {
+            toggleButton.click();
+          }
+        });
+      },
+      onDisconnected: () => {
+        updateNextMindStatus("disconnected");
+      }
     });
   });
 </script>
